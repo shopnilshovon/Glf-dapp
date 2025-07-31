@@ -11,17 +11,31 @@ const TransactionHistory = ({ provider, account }) => {
     if (!provider || !account) return;
 
     const fetchHistory = async () => {
-      const contract = new ethers.Contract(tokenAddress, tokenABI, provider);
-      const filter = contract.filters.Transfer(account, null); // Sent from account
+      try {
+        const contract = new ethers.Contract(tokenAddress, tokenABI, provider);
 
-      const events = await contract.queryFilter(filter, -10000); // last 10k blocks
-      const parsed = events.map((e) => ({
-        to: e.args.to,
-        amount: ethers.utils.formatUnits(e.args.value, 18),
-        txHash: e.transactionHash,
-      }));
+        const sentFilter = contract.filters.Transfer(account, null);
+        const receivedFilter = contract.filters.Transfer(null, account);
 
-      setHistory(parsed.reverse()); // latest first
+        const [sentEvents, receivedEvents] = await Promise.all([
+          contract.queryFilter(sentFilter, -10000),
+          contract.queryFilter(receivedFilter, -10000),
+        ]);
+
+        const parsed = [...sentEvents, ...receivedEvents]
+          .map((e) => ({
+            from: e.args.from,
+            to: e.args.to,
+            amount: ethers.utils.formatUnits(e.args.value, 18),
+            txHash: e.transactionHash,
+            timestamp: e.blockNumber,
+          }))
+          .sort((a, b) => b.timestamp - a.timestamp); // latest first
+
+        setHistory(parsed);
+      } catch (err) {
+        console.error("Transaction history error:", err);
+      }
     };
 
     fetchHistory();
@@ -36,8 +50,18 @@ const TransactionHistory = ({ provider, account }) => {
         <ul className="space-y-2">
           {history.map((tx, i) => (
             <li key={i} className="bg-gray-800 p-3 rounded shadow text-sm">
-              Sent <span className="text-green-400">{tx.amount} GLF</span> to  
-              <span className="text-yellow-400"> {tx.to}</span><br />
+              {tx.from.toLowerCase() === account.toLowerCase() ? (
+                <>
+                  Sent <span className="text-green-400">{tx.amount} GLF</span> to
+                  <span className="text-yellow-400"> {tx.to}</span>
+                </>
+              ) : (
+                <>
+                  Received <span className="text-green-400">{tx.amount} GLF</span> from
+                  <span className="text-yellow-400"> {tx.from}</span>
+                </>
+              )}
+              <br />
               <a
                 href={`https://polygonscan.com/tx/${tx.txHash}`}
                 target="_blank"

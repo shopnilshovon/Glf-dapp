@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Contract, ethers } from 'ethers';
+import { Contract, parseUnits } from 'ethers';
 import tokenABI from '../abis/tokenABI.json';
 
 const tokenAddress = '0xB4b628464F499118340A8Ddf805EF9E18B624310';
@@ -10,45 +10,42 @@ const ClaimReward = ({ provider, account, setNotification = () => {} }) => {
 
   const claimReward = async () => {
     if (!provider || !account) {
-      setNotification({ message: 'Wallet not connected.', type: 'error' });
+      setNotification({ message: '❌ Wallet not connected.', type: 'error' });
       return;
     }
 
     try {
       setLoading(true);
+      console.log("🔍 Provider:", provider);
 
-      const network = await provider.getNetwork();
-      console.log("Chain ID:", network.chainId);
-      if (Number(network.chainId) !== 137) {
-        setNotification({ message: 'Please switch to Polygon mainnet.', type: 'error' });
-        setLoading(false);
-        return;
-      }
-
-      const signer = await provider.getSigner(); // 👈 Must await in ethers v6
-      console.log("Signer address:", await signer.getAddress());
+      const signer = await provider.getSigner();
+      const signerAddress = await signer.getAddress();
+      console.log("✅ Signer Address:", signerAddress);
 
       const contract = new Contract(tokenAddress, tokenABI, signer);
 
+      // Optional: Check pending reward
       const earned = await contract.pendingReward(account);
-      console.log("Pending Reward:", earned.toString());
+      console.log("💰 Pending reward (raw):", earned.toString());
 
-      if (earned.eq(0)) {
-        setNotification({ message: 'No rewards available to claim.', type: 'warning' });
+      if (earned == 0) {
+        setNotification({ message: '⚠️ No rewards available to claim.', type: 'warning' });
         setLoading(false);
         return;
       }
 
+      console.log("🚀 Sending claimReward tx...");
       const tx = await contract.claimReward();
-      console.log("Transaction sent:", tx.hash);
-
+      console.log("📤 Transaction sent:", tx.hash);
       setTxHash(tx.hash);
-      await tx.wait();
 
-      setNotification({ message: 'Reward claimed successfully!', type: 'success' });
+      await tx.wait();
+      console.log("✅ Transaction confirmed");
+
+      setNotification({ message: '✅ Reward claimed successfully!', type: 'success' });
     } catch (err) {
-      console.error("Claim error:", err);
-      setNotification({ message: 'Failed to claim reward.', type: 'error' });
+      console.error("❌ Claim error:", err);
+      setNotification({ message: '❌ Failed to claim reward.', type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -60,8 +57,6 @@ const ClaimReward = ({ provider, account, setNotification = () => {} }) => {
         onClick={claimReward}
         className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
         disabled={loading}
-        aria-busy={loading}
-        aria-disabled={loading}
       >
         {loading ? 'Claiming...' : 'Claim Reward'}
       </button>

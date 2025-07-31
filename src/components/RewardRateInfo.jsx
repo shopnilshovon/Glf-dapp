@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ethers } from 'ethers';
+import { Contract, formatUnits } from 'ethers';
 import tokenABI from '../abis/tokenABI.json';
 
 const tokenAddress = '0xB4b628464F499118340A8Ddf805EF9E18B624310';
@@ -11,14 +11,10 @@ const RewardRateInfo = ({ provider }) => {
     if (!provider) return;
 
     const fetchRate = async () => {
-      try {
-        const contract = new ethers.Contract(tokenAddress, tokenABI, provider);
-        const rawRate = await contract.dailyRewardRate();
-        const percent = parseFloat(ethers.formatUnits(rawRate, 18)) * 100;
-        setRate(percent.toFixed(2));
-      } catch (err) {
-        console.error("Error fetching rate:", err);
-      }
+      const contract = new Contract(tokenAddress, tokenABI, provider);
+      const rawRate = await contract.dailyRewardRate();
+      const percent = parseFloat(formatUnits(rawRate, 18)) * 100;
+      setRate(percent.toFixed(2));
     };
 
     fetchRate();

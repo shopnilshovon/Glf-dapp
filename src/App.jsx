@@ -11,7 +11,6 @@ const App = () => {
   const [provider, setProvider] = useState(null);
   const [notification, setNotification] = useState({ message: '', type: '' });
 
-  // Automatically clear notifications after 3 seconds
   useEffect(() => {
     if (notification.message) {
       const timer = setTimeout(() => {
@@ -39,8 +38,8 @@ const App = () => {
           <>
             <BalanceInfo account={account} provider={provider} />
             <RewardRateInfo provider={provider} />
-            <ClaimReward account={account} provider={provider} />
-            <TransactionHistory account={account} provider={provider} />
+            <ClaimReward account={account} provider={provider} setNotification={setNotification} />
+            <TransactionHistory account={account} />
           </>
         )}
 

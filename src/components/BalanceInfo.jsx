@@ -11,11 +11,15 @@ const BalanceInfo = ({ provider, account }) => {
   useEffect(() => {
     const fetchData = async () => {
       if (provider && account) {
-        const contract = new ethers.Contract(tokenAddress, tokenABI, provider);
-        const rawBalance = await contract.balanceOf(account);
-        const rawReward = await contract.earned(account);
-        setBalance(ethers.utils.formatEther(rawBalance));
-        setRewards(ethers.utils.formatEther(rawReward));
+        try {
+          const contract = new ethers.Contract(tokenAddress, tokenABI, provider);
+          const rawBalance = await contract.balanceOf(account);
+          const rawReward = await contract.earned(account);
+          setBalance(ethers.formatEther(rawBalance));
+          setRewards(ethers.formatEther(rawReward));
+        } catch (err) {
+          console.error("Error fetching balance/rewards:", err);
+        }
       }
     };
 

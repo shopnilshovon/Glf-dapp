@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { formatUnits } from 'ethers';
+import { ethers, formatUnits } from 'ethers';
 
 const tokenAddress = '0xB4b628464F499118340A8Ddf805EF9E18B624310';
 
@@ -13,15 +13,23 @@ const GLFInfo = ({ account, provider }) => {
   const [pending, setPending] = useState(null);
 
   useEffect(() => {
-    if (!account || !provider) return;
+    if (!account || !provider) {
+      console.log("⛔ No account or provider");
+      return;
+    }
 
     const fetchData = async () => {
       try {
+        console.log("🔄 Fetching with account:", account);
+        console.log("🔌 Provider:", provider);
+
         const contract = new ethers.Contract(tokenAddress, tokenABI, provider);
-        const [rawBalance, rawPending] = await Promise.all([
-          contract.balanceOf(account),
-          contract.getPendingReward(account)
-        ]);
+
+        const rawBalance = await contract.balanceOf(account);
+        const rawPending = await contract.getPendingReward(account);
+
+        console.log("✅ Raw balance:", rawBalance);
+        console.log("✅ Raw pending:", rawPending);
 
         setBalance(Number(formatUnits(rawBalance, 18)));
         setPending(Number(formatUnits(rawPending, 18)));

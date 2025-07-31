@@ -10,24 +10,32 @@ const RewardRateInfo = ({ provider }) => {
   useEffect(() => {
     if (!provider) return;
 
-    const fetchRate = async () => {
-      const contract = new ethers.Contract(tokenAddress, tokenABI, provider);
-      const rawRate = await contract.dailyRewardRate();
+    const fetchRewardRate = async () => {
+      try {
+        const contract = new ethers.Contract(tokenAddress, tokenABI, provider);
+        const rawRate = await contract.dailyRewardRate();
 
-      // Convert to percentage
-      const percent = parseFloat(ethers.formatUnits(rawRate, 18)) * 100;
-      setRate(percent > 0 ? percent.toFixed(4) : "0.0000");
+        // Convert to decimal percentage
+        const percent = parseFloat(ethers.formatUnits(rawRate, 18)) * 100;
+
+        setRate(percent.toFixed(4)); // e.g., 4.0000%
+      } catch (error) {
+        console.error("Error fetching reward rate:", error);
+        setRate(null);
+      }
     };
 
-    fetchRate();
+    fetchRewardRate();
   }, [provider]);
 
   return (
     <div className="bg-gray-800 p-4 rounded shadow">
-      <h2 className="text-lg font-semibold mb-2">🌿 Daily Reward Rate</h2>
-      <p className="text-green-400 text-xl">
-        {rate !== null ? `${rate}%` : 'Loading...'}
-      </p>
+      <h2 className="text-lg font-semibold mb-2">Daily Reward Rate</h2>
+      {rate !== null ? (
+        <p className="text-green-400">{rate}% per day</p>
+      ) : (
+        <p className="text-gray-400">Loading reward rate...</p>
+      )}
     </div>
   );
 };

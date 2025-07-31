@@ -8,6 +8,7 @@ import Notifications from './components/Notifications';
 
 const App = () => {
   const [account, setAccount] = useState(null);
+  const [provider, setProvider] = useState(null);
   const [notification, setNotification] = useState({ message: '', type: '' });
 
   // Automatically clear notifications after 3 seconds
@@ -28,14 +29,18 @@ const App = () => {
 
         <Notifications message={notification.message} type={notification.type} />
 
-        <WalletConnect setAccount={setAccount} setNotification={setNotification} />
+        <WalletConnect
+          setAccount={setAccount}
+          setProvider={setProvider}
+          setNotification={setNotification}
+        />
 
-        {account && (
+        {account && provider && (
           <>
-            <BalanceInfo account={account} />
-            <RewardRateInfo />
-            <ClaimReward account={account} setNotification={setNotification} />
-            <TransactionHistory account={account} />
+            <BalanceInfo account={account} provider={provider} />
+            <RewardRateInfo provider={provider} />
+            <ClaimReward account={account} provider={provider} />
+            <TransactionHistory account={account} provider={provider} />
           </>
         )}
 

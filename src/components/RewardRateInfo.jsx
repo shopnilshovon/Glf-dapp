@@ -11,10 +11,14 @@ const RewardRateInfo = ({ provider }) => {
     if (!provider) return;
 
     const fetchRate = async () => {
-      const contract = new ethers.Contract(tokenAddress, tokenABI, provider);
-      const rawRate = await contract.dailyRewardRate();
-      const percent = parseFloat(ethers.utils.formatUnits(rawRate, 18)) * 100;
-      setRate(percent.toFixed(2));
+      try {
+        const contract = new ethers.Contract(tokenAddress, tokenABI, provider);
+        const rawRate = await contract.dailyRewardRate();
+        const percent = parseFloat(ethers.formatUnits(rawRate, 18)) * 100;
+        setRate(percent.toFixed(2));
+      } catch (err) {
+        console.error("Error fetching rate:", err);
+      }
     };
 
     fetchRate();

@@ -10,31 +10,31 @@ const RewardRateInfo = ({ provider }) => {
   useEffect(() => {
     if (!provider) return;
 
-    const fetchRewardRate = async () => {
+    const fetchRate = async () => {
       try {
         const contract = new ethers.Contract(tokenAddress, tokenABI, provider);
-        const rawRate = await contract.dailyRewardRate();
-
-        // Convert BigNumber to percent
-        const percent = Number(ethers.formatUnits(rawRate, 18)) * 100;
-        setRate(percent.toFixed(4)); // e.g., 4.0000%
+        const rawRate = await contract.dailyRewardRate(); // returns 4
+        const percent = parseFloat(rawRate.toString()).toFixed(2); // "4.00"
+        setRate(percent);
       } catch (error) {
         console.error("Error fetching reward rate:", error);
-        setRate(null);
       }
     };
 
-    fetchRewardRate();
+    fetchRate();
   }, [provider]);
 
   return (
-    <div className="bg-gray-800 p-4 rounded shadow">
-      <h2 className="text-lg font-semibold mb-2">Daily Reward Rate</h2>
-      {rate !== null ? (
-        <p className="text-green-400">{rate}% per day</p>
-      ) : (
-        <p className="text-gray-400">Loading reward rate...</p>
-      )}
+    <div className="bg-gradient-to-r from-green-600 to-emerald-700 p-5 rounded-2xl shadow-lg text-white">
+      <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
+        📈 Daily Reward Rate
+      </h2>
+      <p className="text-3xl font-mono font-semibold">
+        {rate !== null ? `${rate}% per day` : 'Loading...'}
+      </p>
+      <p className="text-sm text-emerald-100 mt-1">
+        Rewards grow daily based on your GLF balance.
+      </p>
     </div>
   );
 };

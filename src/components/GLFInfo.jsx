@@ -1,58 +1,45 @@
 import React, { useEffect, useState } from 'react';
 import { formatUnits } from 'ethers';
 
+const tokenAddress = '0xB4b628464F499118340A8Ddf805EF9E18B624310';
+
+const tokenABI = [
+  "function balanceOf(address) view returns (uint256)",
+  "function getPendingReward(address) view returns (uint256)"
+];
+
 const GLFInfo = ({ account, provider }) => {
   const [balance, setBalance] = useState(null);
-  const [pendingReward, setPendingReward] = useState(null);
-
-  const tokenAddress = '0xB4b628464F499118340A8Ddf805EF9E18B624310';
-  const tokenABI = [
-    'function balanceOf(address) view returns (uint256)',
-    'function pendingReward(address) view returns (uint256)'
-  ];
+  const [pending, setPending] = useState(null);
 
   useEffect(() => {
-    const fetchInfo = async () => {
-      try {
-        const signer = provider.getSigner();
-        const contract = new ethers.Contract(tokenAddress, tokenABI, signer);
+    if (!account || !provider) return;
 
-        const [bal, reward] = await Promise.all([
+    const fetchData = async () => {
+      try {
+        const contract = new ethers.Contract(tokenAddress, tokenABI, provider);
+        const [rawBalance, rawPending] = await Promise.all([
           contract.balanceOf(account),
-          contract.pendingReward(account)
+          contract.getPendingReward(account)
         ]);
 
-        setBalance(formatUnits(bal, 18));
-        setPendingReward(formatUnits(reward, 18));
+        setBalance(Number(formatUnits(rawBalance, 18)));
+        setPending(Number(formatUnits(rawPending, 18)));
       } catch (err) {
-        console.error('Failed to fetch GLF info:', err);
+        console.error("❌ Error fetching balance or rewards:", err);
       }
     };
 
-    if (provider && account) {
-      fetchInfo();
-    }
+    fetchData();
   }, [account, provider]);
 
-  const shortenAddress = (addr) => `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+  const shortAddress = (addr) => `${addr.slice(0, 6)}...${addr.slice(-4)}`;
 
   return (
-    <div className="bg-gray-800 rounded-2xl p-4 shadow-md space-y-2">
-      <div className="text-sm text-gray-400">Connected Wallet:</div>
-      <div className="text-lg font-mono">{shortenAddress(account)}</div>
-
-      <div className="flex justify-between pt-2 border-t border-gray-700 mt-2">
-        <div>
-          <div className="text-sm text-gray-400">GLF Balance</div>
-          <div className="text-xl font-semibold text-green-400">{balance ?? '...'}</div>
-        </div>
-        <div>
-          <div className="text-sm text-gray-400 text-right">Pending Reward</div>
-          <div className="text-xl font-semibold text-yellow-400 text-right">
-            {pendingReward ?? '...'}
-          </div>
-        </div>
-      </div>
+    <div className="bg-gray-800 p-4 rounded-2xl shadow-md space-y-2 text-sm sm:text-base">
+      <p><strong>Wallet:</strong> {shortAddress(account)}</p>
+      <p><strong>GLF Balance:</strong> {balance !== null ? `${balance.toFixed(4)} GLF` : 'Loading...'}</p>
+      <p><strong>Pending Rewards:</strong> {pending !== null ? `${pending.toFixed(6)} GLF` : 'Loading...'}</p>
     </div>
   );
 };

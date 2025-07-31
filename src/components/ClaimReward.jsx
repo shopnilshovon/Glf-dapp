@@ -4,7 +4,7 @@ import tokenABI from '../abis/tokenABI.json';
 
 const tokenAddress = '0xB4b628464F499118340A8Ddf805EF9E18B624310';
 
-const ClaimReward = ({ provider, account }) => {
+const ClaimReward = ({ provider, account, setNotification }) => {
   const [loading, setLoading] = useState(false);
   const [txHash, setTxHash] = useState(null);
 
@@ -13,15 +13,15 @@ const ClaimReward = ({ provider, account }) => {
 
     try {
       setLoading(true);
-      const signer = provider.getSigner();
+      const signer = await provider.getSigner(); // Note the await
       const contract = new ethers.Contract(tokenAddress, tokenABI, signer);
-      const tx = await contract.getReward(); // assuming getReward() claims reward
+      const tx = await contract.getReward();
       setTxHash(tx.hash);
       await tx.wait();
-      alert("✅ Reward claimed successfully!");
+      setNotification?.({ message: "✅ Reward claimed successfully!", type: "success" });
     } catch (error) {
-      console.error(error);
-      alert("❌ Failed to claim reward.");
+      console.error("Claim failed:", error);
+      setNotification?.({ message: "❌ Failed to claim reward.", type: "error" });
     } finally {
       setLoading(false);
     }
@@ -39,7 +39,7 @@ const ClaimReward = ({ provider, account }) => {
 
       {txHash && (
         <p className="text-sm mt-2 text-gray-300">
-          View Tx: <a href={`https://polygonscan.com/tx/${txHash}`} target="_blank" rel="noopener noreferrer" className="underline text-blue-400">View on PolygonScan</a>
+          View Tx: <a href={`https://polygonscan.com/tx/${txHash}`} target="_blank" rel="noopener noreferrer" className="underline text-blue-400">PolygonScan</a>
         </p>
       )}
     </div>

@@ -17,26 +17,37 @@ const ClaimReward = ({ provider, account, setNotification = () => {} }) => {
     try {
       setLoading(true);
 
-      const signer = await provider.getSigner(); // ✅ ethers v6 requires await
+      const signer = await provider.getSigner();
       const contract = new Contract(tokenAddress, tokenABI, signer);
 
-      // Check pending rewards
-      const earned = await contract.pendingReward(account);
-      if (earned === 0n || earned.eq(0)) {
-        setNotification({ message: '⚠️ No rewards available to claim.', type: 'warning' });
+      // Optional: double check if rewards are enabled
+      const rewardsEnabled = await contract.rewardsEnabled();
+      if (!rewardsEnabled) {
+        setNotification({ message: '⚠️ Rewards are disabled.', type: 'warning' });
         setLoading(false);
         return;
       }
 
-      // Claim reward
-      const tx = await contract.claimReward(); // 🔥 This should trigger MetaMask
-      setTxHash(tx.hash);
+      // Optional: pendingReward re-check
+      const pending = await contract.pendingReward(account);
+      if (pending.eq(0)) {
+        setNotification({ message: '⚠️ No pending rewards.', type: 'warning' });
+        setLoading(false);
+        return;
+      }
+
+      const tx = await contract.claimReward();
       await tx.wait();
 
+      setTxHash(tx.hash);
       setNotification({ message: '✅ Reward claimed successfully!', type: 'success' });
     } catch (err) {
-      console.error('Claim error:', err);
-      setNotification({ message: '❌ Failed to claim reward.', type: 'error' });
+      console.error('❌ Claim failed:', err);
+      if (err?.info?.error?.message) {
+        setNotification({ message: `Error: ${err.info.error.message}`, type: 'error' });
+      } else {
+        setNotification({ message: '❌ Failed to claim reward.', type: 'error' });
+      }
     } finally {
       setLoading(false);
     }
@@ -48,8 +59,6 @@ const ClaimReward = ({ provider, account, setNotification = () => {} }) => {
         onClick={claimReward}
         className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
         disabled={loading}
-        aria-busy={loading}
-        aria-disabled={loading}
       >
         {loading ? 'Claiming...' : 'Claim Reward'}
       </button>

@@ -10,44 +10,40 @@ const ClaimReward = ({ provider, account, setNotification = () => {} }) => {
 
   const claimReward = async () => {
     if (!provider || !account) {
-      setNotification({ message: '❌ Wallet not connected.', type: 'error' });
+      setNotification({ message: 'Wallet not connected.', type: 'error' });
       return;
     }
 
     try {
       setLoading(true);
 
-      const signer = await provider.getSigner();
-      const contract = new Contract(tokenAddress, tokenABI, signer);
-
-      // Optional: double check if rewards are enabled
-      const rewardsEnabled = await contract.rewardsEnabled();
-      if (!rewardsEnabled) {
-        setNotification({ message: '⚠️ Rewards are disabled.', type: 'warning' });
+      const network = await provider.getNetwork();
+      if (network.chainId !== 137) {
+        setNotification({ message: 'Please switch to Polygon network.', type: 'error' });
         setLoading(false);
         return;
       }
 
-      // Optional: pendingReward re-check
-      const pending = await contract.pendingReward(account);
-      if (pending.eq(0)) {
-        setNotification({ message: '⚠️ No pending rewards.', type: 'warning' });
+      const signer = await provider.getSigner(); // Ethers v6 requires await
+      const contract = new Contract(tokenAddress, tokenABI, signer);
+
+      const earned = await contract.pendingReward(account);
+      console.log("Pending Reward:", earned.toString());
+
+      if (earned.eq(0)) {
+        setNotification({ message: 'No rewards available to claim.', type: 'warning' });
         setLoading(false);
         return;
       }
 
       const tx = await contract.claimReward();
+      setTxHash(tx.hash);
       await tx.wait();
 
-      setTxHash(tx.hash);
-      setNotification({ message: '✅ Reward claimed successfully!', type: 'success' });
+      setNotification({ message: 'Reward claimed successfully!', type: 'success' });
     } catch (err) {
-      console.error('❌ Claim failed:', err);
-      if (err?.info?.error?.message) {
-        setNotification({ message: `Error: ${err.info.error.message}`, type: 'error' });
-      } else {
-        setNotification({ message: '❌ Failed to claim reward.', type: 'error' });
-      }
+      console.error("Claim error:", err);
+      setNotification({ message: 'Failed to claim reward.', type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -59,6 +55,8 @@ const ClaimReward = ({ provider, account, setNotification = () => {} }) => {
         onClick={claimReward}
         className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
         disabled={loading}
+        aria-busy={loading}
+        aria-disabled={loading}
       >
         {loading ? 'Claiming...' : 'Claim Reward'}
       </button>

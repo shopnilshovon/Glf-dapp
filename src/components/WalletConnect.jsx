@@ -5,53 +5,60 @@ const WalletConnect = ({ setAccount, setProvider, setNotification }) => {
   const [localAccount, setLocalAccount] = useState(null);
 
   const switchToPolygon = async () => {
-    const polygonChainId = "0x89"; // 137
+    const polygonChainId = "0x89"; // Polygon Mainnet
     try {
       await window.ethereum.request({
         method: "wallet_switchEthereumChain",
         params: [{ chainId: polygonChainId }],
       });
-    } catch (err) {
-      console.error("Chain switch failed:", err);
-      setNotification?.({ message: "❌ Failed to switch to Polygon", type: "error" });
+    } catch (switchError) {
+      console.error("Chain switch error:", switchError);
+      setNotification({
+        message: "⚠️ Failed to switch to Polygon network.",
+        type: "error",
+      });
     }
   };
 
   const connectWallet = async () => {
-    if (typeof window.ethereum !== "undefined") {
-      try {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        await provider.send("eth_requestAccounts", []);
-        const signer = provider.getSigner();
-        const address = await signer.getAddress();
-
-        setLocalAccount(address);
-        setAccount(address);
-        setProvider(provider);
-
-        await switchToPolygon();
-        setNotification?.({ message: "✅ Wallet connected", type: "success" });
-      } catch (err) {
-        console.error("Wallet connect error:", err);
-        setNotification?.({ message: "❌ Wallet connection failed", type: "error" });
-      }
-    } else {
+    if (typeof window.ethereum === "undefined") {
       alert("🦊 Please install MetaMask!");
+      return;
+    }
+
+    try {
+      const [address] = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+
+      await switchToPolygon();
+
+      const web3Provider = new ethers.BrowserProvider(window.ethereum);
+
+      setLocalAccount(address);
+      setAccount(address);
+      setProvider(web3Provider);
+
+      setNotification({ message: "✅ Wallet connected!", type: "success" });
+    } catch (error) {
+      console.error("Wallet connect failed:", error);
+      setNotification({ message: "❌ Wallet connection failed.", type: "error" });
     }
   };
 
   useEffect(() => {
-    const init = async () => {
+    const initialize = async () => {
       if (window.ethereum && window.ethereum.selectedAddress) {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const signer = provider.getSigner();
-        const address = await signer.getAddress();
+        const address = window.ethereum.selectedAddress;
+        const web3Provider = new ethers.BrowserProvider(window.ethereum);
+
         setLocalAccount(address);
         setAccount(address);
-        setProvider(provider);
+        setProvider(web3Provider);
       }
     };
-    init();
+
+    initialize();
   }, []);
 
   return (

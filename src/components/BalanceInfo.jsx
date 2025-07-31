@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ethers } from 'ethers';
+import { Contract, formatEther } from 'ethers';
 import tokenABI from '../abis/tokenABI.json';
 
 const tokenAddress = '0xB4b628464F499118340A8Ddf805EF9E18B624310';
@@ -11,15 +11,11 @@ const BalanceInfo = ({ provider, account }) => {
   useEffect(() => {
     const fetchData = async () => {
       if (provider && account) {
-        try {
-          const contract = new ethers.Contract(tokenAddress, tokenABI, provider);
-          const rawBalance = await contract.balanceOf(account);
-          const rawReward = await contract.earned(account);
-          setBalance(ethers.formatEther(rawBalance));
-          setRewards(ethers.formatEther(rawReward));
-        } catch (err) {
-          console.error("Error fetching balance/rewards:", err);
-        }
+        const contract = new Contract(tokenAddress, tokenABI, provider);
+        const rawBalance = await contract.balanceOf(account);
+        const rawReward = await contract.earned(account);
+        setBalance(formatEther(rawBalance));
+        setRewards(formatEther(rawReward));
       }
     };
 

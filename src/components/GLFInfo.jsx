@@ -1,38 +1,51 @@
-import React from "react";
-import { FaWallet, FaLeaf, FaGift } from "react-icons/fa";
+import React, { useEffect, useState } from 'react';
+import { ethers } from 'ethers';
+import tokenABI from '../abi/tokenABI.json';
 
-const GLFInfo = ({ account, balance, rewards }) => {
+const tokenAddress = '0xB4b628464F499118340A8Ddf805EF9E18B624310';
+
+const GLFInfo = ({ account, provider }) => {
+  const [balance, setBalance] = useState('0');
+  const [pendingReward, setPendingReward] = useState('0');
+
+  useEffect(() => {
+    const fetchInfo = async () => {
+      if (!provider || !account) return;
+
+      try {
+        const contract = new ethers.Contract(tokenAddress, tokenABI, provider);
+
+        const bal = await contract.balanceOf(account);
+        const reward = await contract.pendingReward(account);
+
+        setBalance(ethers.formatUnits(bal, 18));
+        setPendingReward(ethers.formatUnits(reward, 18));
+      } catch (error) {
+        console.error('Error fetching GLF info:', error);
+      }
+    };
+
+    fetchInfo();
+  }, [provider, account]);
+
   return (
-    <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-lg p-6 w-full max-w-md mx-auto mt-8 text-white space-y-5 border border-gray-700">
-      <h2 className="text-2xl font-semibold text-center mb-2">🌿 Your GLF Info</h2>
+    <div className="bg-gray-800 p-6 rounded-2xl shadow-xl space-y-4 border border-green-600">
+      <h2 className="text-2xl font-semibold text-green-400 text-center">🌱 Your GLF Info</h2>
 
-      <div className="flex items-center justify-between border-b border-gray-700 pb-2">
-        <div className="flex items-center gap-2 text-gray-400">
-          <FaWallet className="text-green-400" />
-          <span className="text-sm font-medium">Wallet</span>
+      <div className="space-y-2">
+        <div className="flex justify-between items-center">
+          <span className="text-gray-400">🔗 Wallet:</span>
+          <span className="font-mono text-sm">{account.slice(0, 6)}...{account.slice(-4)}</span>
         </div>
-        <div className="font-mono text-sm text-green-300">
-          {account ? `${account.slice(0, 6)}...${account.slice(-4)}` : "Not Connected"}
-        </div>
-      </div>
 
-      <div className="flex items-center justify-between border-b border-gray-700 pb-2">
-        <div className="flex items-center gap-2 text-gray-400">
-          <FaLeaf className="text-green-500" />
-          <span className="text-sm font-medium">GLF Balance</span>
+        <div className="flex justify-between items-center">
+          <span className="text-gray-400">💰 GLF Balance:</span>
+          <span className="text-green-300 font-bold">{parseFloat(balance).toFixed(6)} GLF</span>
         </div>
-        <div className="text-lg font-semibold text-green-400">
-          {parseFloat(balance || 0).toFixed(6)} GLF
-        </div>
-      </div>
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-gray-400">
-          <FaGift className="text-yellow-400" />
-          <span className="text-sm font-medium">Pending Rewards</span>
-        </div>
-        <div className="text-lg font-semibold text-yellow-300">
-          {parseFloat(rewards || 0).toFixed(6)} GLF
+        <div className="flex justify-between items-center">
+          <span className="text-gray-400">🎁 Pending Rewards:</span>
+          <span className="text-yellow-300 font-bold">{parseFloat(pendingReward).toFixed(6)} GLF</span>
         </div>
       </div>
     </div>

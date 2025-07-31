@@ -16,39 +16,27 @@ const ClaimReward = ({ provider, account, setNotification = () => {} }) => {
 
     try {
       setLoading(true);
-      console.log('🧾 Starting claim reward process...');
 
-      const signer = await provider.getSigner();
-      const address = await signer.getAddress();
-      console.log('🧾 Signer address:', address);
-
+      const signer = await provider.getSigner(); // ✅ ethers v6 requires await
       const contract = new Contract(tokenAddress, tokenABI, signer);
 
-      const earned = await contract.pendingReward(address);
-      console.log('🧾 Earned:', ethers.utils.formatEther(earned));
-
-      if (earned.eq(0)) {
+      // Check pending rewards
+      const earned = await contract.pendingReward(account);
+      if (earned === 0n || earned.eq(0)) {
         setNotification({ message: '⚠️ No rewards available to claim.', type: 'warning' });
         setLoading(false);
         return;
       }
 
-      const tx = await contract.claimReward(); // 🧠 Signature prompt expected here
-      console.log('✅ Transaction sent:', tx.hash);
-
+      // Claim reward
+      const tx = await contract.claimReward(); // 🔥 This should trigger MetaMask
       setTxHash(tx.hash);
       await tx.wait();
 
       setNotification({ message: '✅ Reward claimed successfully!', type: 'success' });
     } catch (err) {
-      console.error('❌ Claim reward failed:', err);
-
-      let msg = '❌ Failed to claim reward.';
-      if (err.code === 4001) {
-        msg = '❌ User rejected the transaction.';
-      }
-
-      setNotification({ message: msg, type: 'error' });
+      console.error('Claim error:', err);
+      setNotification({ message: '❌ Failed to claim reward.', type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -60,6 +48,8 @@ const ClaimReward = ({ provider, account, setNotification = () => {} }) => {
         onClick={claimReward}
         className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
         disabled={loading}
+        aria-busy={loading}
+        aria-disabled={loading}
       >
         {loading ? 'Claiming...' : 'Claim Reward'}
       </button>

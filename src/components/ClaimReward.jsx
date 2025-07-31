@@ -20,10 +20,10 @@ const ClaimReward = ({ provider, account, setNotification = () => {} }) => {
       const signer = provider.getSigner();
       const contract = new Contract(tokenAddress, tokenABI, signer);
 
-      // Check if earned is > 0 before claiming
-      const earned = await contract.earned(account);
+      // ✅ Replace earned() with pendingReward()
+      const pending = await contract.pendingReward(account);
 
-      if (earned.eq(0)) {
+      if (pending.eq(0)) {
         setNotification({ message: '⚠️ Nothing to claim', type: 'warning' });
         setLoading(false);
         return;

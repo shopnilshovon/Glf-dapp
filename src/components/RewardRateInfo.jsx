@@ -15,9 +15,8 @@ const RewardRateInfo = ({ provider }) => {
         const contract = new ethers.Contract(tokenAddress, tokenABI, provider);
         const rawRate = await contract.dailyRewardRate();
 
-        // Convert to decimal percentage
-        const percent = parseFloat(ethers.formatUnits(rawRate, 18)) * 100;
-
+        // Convert BigNumber to percent
+        const percent = Number(ethers.formatUnits(rawRate, 18)) * 100;
         setRate(percent.toFixed(4)); // e.g., 4.0000%
       } catch (error) {
         console.error("Error fetching reward rate:", error);

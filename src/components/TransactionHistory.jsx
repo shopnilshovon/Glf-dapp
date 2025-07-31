@@ -4,56 +4,63 @@ import tokenABI from '../abis/tokenABI.json';
 
 const tokenAddress = '0xB4b628464F499118340A8Ddf805EF9E18B624310';
 
-const TransactionHistory = ({ provider, account }) => {
-  const [history, setHistory] = useState([]);
+const TransactionHistory = ({ account }) => {
+  const [provider, setProvider] = useState(null);
+  const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    if (!provider || !account) return;
+    if (!account) return;
 
-    const fetchHistory = async () => {
-      const contract = new ethers.Contract(tokenAddress, tokenABI, provider);
+    const loadHistory = async () => {
+      try {
+        const newProvider = new ethers.JsonRpcProvider("https://polygon-rpc.com"); // You can customize
+        setProvider(newProvider);
 
-      const sentFilter = contract.filters.Transfer(account, null);
-      const receivedFilter = contract.filters.Transfer(null, account);
+        const contract = new ethers.Contract(tokenAddress, tokenABI, newProvider);
 
-      const sentEvents = await contract.queryFilter(sentFilter, -10000);
-      const receivedEvents = await contract.queryFilter(receivedFilter, -10000);
+        const filter = contract.filters.Claimed(account);
 
-      const allEvents = [...sentEvents, ...receivedEvents];
+        const logs = await contract.queryFilter(filter, -5000); // Last 5000 blocks
 
-      const parsed = allEvents.map((e) => ({
-        from: e.args.from,
-        to: e.args.to,
-        amount: ethers.formatUnits(e.args.value, 18),
-        txHash: e.transactionHash,
-      }));
+        const parsed = logs
+          .reverse()
+          .slice(0, 10)
+          .map((log) => ({
+            txHash: log.transactionHash,
+            amount: ethers.formatUnits(log.args[1], 18),
+            timestamp: log.blockNumber,
+          }));
 
-      setHistory(parsed.reverse()); // Latest first
+        setEvents(parsed);
+      } catch (err) {
+        console.error("Error loading transaction history:", err);
+      }
     };
 
-    fetchHistory();
-  }, [provider, account]);
+    loadHistory();
+  }, [account]);
 
   return (
-    <div className="mt-6">
-      <h2 className="text-xl font-semibold mb-2 text-white">Transaction History</h2>
-      {history.length === 0 ? (
-        <p className="text-gray-400">No transactions found.</p>
+    <div className="mt-6 p-4 rounded bg-gray-800 text-white shadow">
+      <h2 className="text-lg font-semibold mb-2">📜 Claim Transaction History</h2>
+      {events.length === 0 ? (
+        <p className="text-gray-400">No recent claim transactions found.</p>
       ) : (
-        <ul className="space-y-2">
-          {history.map((tx, i) => (
-            <li key={i} className="bg-gray-800 p-3 rounded shadow text-sm">
-              <span className="text-yellow-300">From:</span> {tx.from.slice(0, 6)}...{tx.from.slice(-4)} <br />
-              <span className="text-green-300">To:</span> {tx.to.slice(0, 6)}...{tx.to.slice(-4)} <br />
-              <span className="text-white">Amount:</span> {tx.amount} GLF <br />
-              <a
-                href={`https://polygonscan.com/tx/${tx.txHash}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-400 underline"
-              >
-                View on PolygonScan
-              </a>
+        <ul className="space-y-2 text-sm">
+          {events.map((event, index) => (
+            <li key={index} className="bg-gray-900 p-3 rounded border border-gray-700">
+              <div>💰 <span className="text-green-400">{event.amount} GLF</span> claimed</div>
+              <div className="text-gray-400">
+                Tx:{' '}
+                <a
+                  href={`https://polygonscan.com/tx/${event.txHash}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline text-blue-400"
+                >
+                  {event.txHash.slice(0, 6)}...{event.txHash.slice(-4)}
+                </a>
+              </div>
             </li>
           ))}
         </ul>

@@ -11,31 +11,24 @@ const TransactionHistory = ({ provider, account }) => {
     if (!provider || !account) return;
 
     const fetchHistory = async () => {
-      try {
-        const contract = new ethers.Contract(tokenAddress, tokenABI, provider);
+      const contract = new ethers.Contract(tokenAddress, tokenABI, provider);
 
-        const sentFilter = contract.filters.Transfer(account, null);
-        const receivedFilter = contract.filters.Transfer(null, account);
+      const sentFilter = contract.filters.Transfer(account, null);
+      const receivedFilter = contract.filters.Transfer(null, account);
 
-        const [sentEvents, receivedEvents] = await Promise.all([
-          contract.queryFilter(sentFilter, -10000),
-          contract.queryFilter(receivedFilter, -10000),
-        ]);
+      const sentEvents = await contract.queryFilter(sentFilter, -10000);
+      const receivedEvents = await contract.queryFilter(receivedFilter, -10000);
 
-        const parsed = [...sentEvents, ...receivedEvents]
-          .map((e) => ({
-            from: e.args.from,
-            to: e.args.to,
-            amount: ethers.utils.formatUnits(e.args.value, 18),
-            txHash: e.transactionHash,
-            timestamp: e.blockNumber,
-          }))
-          .sort((a, b) => b.timestamp - a.timestamp); // latest first
+      const allEvents = [...sentEvents, ...receivedEvents];
 
-        setHistory(parsed);
-      } catch (err) {
-        console.error("Transaction history error:", err);
-      }
+      const parsed = allEvents.map((e) => ({
+        from: e.args.from,
+        to: e.args.to,
+        amount: ethers.formatUnits(e.args.value, 18),
+        txHash: e.transactionHash,
+      }));
+
+      setHistory(parsed.reverse()); // Latest first
     };
 
     fetchHistory();
@@ -50,18 +43,9 @@ const TransactionHistory = ({ provider, account }) => {
         <ul className="space-y-2">
           {history.map((tx, i) => (
             <li key={i} className="bg-gray-800 p-3 rounded shadow text-sm">
-              {tx.from.toLowerCase() === account.toLowerCase() ? (
-                <>
-                  Sent <span className="text-green-400">{tx.amount} GLF</span> to
-                  <span className="text-yellow-400"> {tx.to}</span>
-                </>
-              ) : (
-                <>
-                  Received <span className="text-green-400">{tx.amount} GLF</span> from
-                  <span className="text-yellow-400"> {tx.from}</span>
-                </>
-              )}
-              <br />
+              <span className="text-yellow-300">From:</span> {tx.from.slice(0, 6)}...{tx.from.slice(-4)} <br />
+              <span className="text-green-300">To:</span> {tx.to.slice(0, 6)}...{tx.to.slice(-4)} <br />
+              <span className="text-white">Amount:</span> {tx.amount} GLF <br />
               <a
                 href={`https://polygonscan.com/tx/${tx.txHash}`}
                 target="_blank"

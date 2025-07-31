@@ -18,13 +18,16 @@ const ClaimReward = ({ provider, account, setNotification = () => {} }) => {
       setLoading(true);
 
       const network = await provider.getNetwork();
-      if (network.chainId !== 137) {
-        setNotification({ message: 'Please switch to Polygon network.', type: 'error' });
+      console.log("Chain ID:", network.chainId);
+      if (Number(network.chainId) !== 137) {
+        setNotification({ message: 'Please switch to Polygon mainnet.', type: 'error' });
         setLoading(false);
         return;
       }
 
-      const signer = await provider.getSigner(); // Ethers v6 requires await
+      const signer = await provider.getSigner(); // 👈 Must await in ethers v6
+      console.log("Signer address:", await signer.getAddress());
+
       const contract = new Contract(tokenAddress, tokenABI, signer);
 
       const earned = await contract.pendingReward(account);
@@ -37,6 +40,8 @@ const ClaimReward = ({ provider, account, setNotification = () => {} }) => {
       }
 
       const tx = await contract.claimReward();
+      console.log("Transaction sent:", tx.hash);
+
       setTxHash(tx.hash);
       await tx.wait();
 

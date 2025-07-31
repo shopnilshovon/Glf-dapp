@@ -22,12 +22,12 @@ const GLFInfo = ({ account, provider }) => {
 
         const [rawBal, rawPending] = await Promise.all([
           contract.balanceOf(account),
-          contract.pendingReward(account)
+          contract.pendingReward(account) // ✅ Fixed here
         ]);
 
         setBalance(Number(formatUnits(rawBal, 18)));
         setPending(Number(formatUnits(rawPending, 18)));
-        setFadeIn(true);
+        setFadeIn(true); // 🪄 Trigger fade-in animation
       } catch (err) {
         console.error("❌ Error fetching token data:", err);
       }
@@ -42,7 +42,7 @@ const GLFInfo = ({ account, provider }) => {
     <div
       className={`transition-opacity duration-700 ease-in-out ${
         fadeIn ? 'opacity-100' : 'opacity-0'
-      } bg-gradient-to-br from-indigo-900 via-purple-800 to-blue-700 text-white p-5 rounded-2xl shadow-xl space-y-3 border border-indigo-500/30 backdrop-blur-md`}
+      } bg-gradient-to-br from-green-800 to-green-600 text-white p-5 rounded-2xl shadow-lg space-y-3`}
     >
       <p className="text-sm sm:text-base">
         <span className="font-semibold text-gray-300">Wallet:</span>{' '}

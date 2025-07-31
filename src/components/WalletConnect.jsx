@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 
-const WalletConnect = ({ setAccount }) => {
+const WalletConnect = ({ setAccount, setProvider, setNotification }) => {
   const [account, setLocalAccount] = useState(null);
 
   const switchToPolygon = async () => {
@@ -13,6 +13,10 @@ const WalletConnect = ({ setAccount }) => {
       });
     } catch (switchError) {
       console.error("Polygon switch failed:", switchError);
+      setNotification?.({
+        message: "Failed to switch to Polygon network.",
+        type: "error",
+      });
     }
   };
 
@@ -22,11 +26,15 @@ const WalletConnect = ({ setAccount }) => {
         const [address] = await window.ethereum.request({
           method: "eth_requestAccounts",
         });
+        const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
         setLocalAccount(address);
         setAccount(address);
+        setProvider(web3Provider);
+        setNotification?.({ message: "✅ Wallet connected", type: "success" });
         await switchToPolygon();
       } catch (err) {
         console.error("Wallet connect error:", err);
+        setNotification?.({ message: "❌ Wallet connection failed", type: "error" });
       }
     } else {
       alert("🦊 Install MetaMask first.");
@@ -35,8 +43,10 @@ const WalletConnect = ({ setAccount }) => {
 
   useEffect(() => {
     if (window.ethereum && window.ethereum.selectedAddress) {
+      const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
       setLocalAccount(window.ethereum.selectedAddress);
       setAccount(window.ethereum.selectedAddress);
+      setProvider(web3Provider);
     }
   }, []);
 

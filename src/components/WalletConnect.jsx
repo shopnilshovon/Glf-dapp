@@ -2,59 +2,63 @@ import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 
 const WalletConnect = ({ setAccount, setProvider, setNotification }) => {
-  const [account, setLocalAccount] = useState(null);
+  const [localAccount, setLocalAccount] = useState(null);
 
   const switchToPolygon = async () => {
-    const polygonChainId = "0x89"; // 137 in hex
+    const polygonChainId = "0x89"; // 137
     try {
       await window.ethereum.request({
         method: "wallet_switchEthereumChain",
         params: [{ chainId: polygonChainId }],
       });
-    } catch (switchError) {
-      console.error("Polygon switch failed:", switchError);
-      setNotification?.({
-        message: "Failed to switch to Polygon network.",
-        type: "error",
-      });
+    } catch (err) {
+      console.error("Chain switch failed:", err);
+      setNotification?.({ message: "❌ Failed to switch to Polygon", type: "error" });
     }
   };
 
   const connectWallet = async () => {
     if (typeof window.ethereum !== "undefined") {
       try {
-        const [address] = await window.ethereum.request({
-          method: "eth_requestAccounts",
-        });
-        const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        const signer = provider.getSigner();
+        const address = await signer.getAddress();
+
         setLocalAccount(address);
         setAccount(address);
-        setProvider(web3Provider);
-        setNotification?.({ message: "✅ Wallet connected", type: "success" });
+        setProvider(provider);
+
         await switchToPolygon();
+        setNotification?.({ message: "✅ Wallet connected", type: "success" });
       } catch (err) {
         console.error("Wallet connect error:", err);
         setNotification?.({ message: "❌ Wallet connection failed", type: "error" });
       }
     } else {
-      alert("🦊 Install MetaMask first.");
+      alert("🦊 Please install MetaMask!");
     }
   };
 
   useEffect(() => {
-    if (window.ethereum && window.ethereum.selectedAddress) {
-      const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
-      setLocalAccount(window.ethereum.selectedAddress);
-      setAccount(window.ethereum.selectedAddress);
-      setProvider(web3Provider);
-    }
+    const init = async () => {
+      if (window.ethereum && window.ethereum.selectedAddress) {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const address = await signer.getAddress();
+        setLocalAccount(address);
+        setAccount(address);
+        setProvider(provider);
+      }
+    };
+    init();
   }, []);
 
   return (
     <div className="mb-6">
-      {account ? (
+      {localAccount ? (
         <div className="text-sm text-green-500 font-mono">
-          ✅ Connected: {account.slice(0, 6)}...{account.slice(-4)}
+          ✅ Connected: {localAccount.slice(0, 6)}...{localAccount.slice(-4)}
         </div>
       ) : (
         <button

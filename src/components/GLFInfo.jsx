@@ -1,56 +1,56 @@
 import React, { useEffect, useState } from 'react';
-import { FaLeaf } from 'react-icons/fa';
-import { ethers } from 'ethers';
-import tokenAbi from '../abi/tokenAbi.json';
+import { formatUnits } from 'ethers';
 
 const GLFInfo = ({ account, provider }) => {
-  const [balance, setBalance] = useState('0');
-  const [rewards, setRewards] = useState('0');
+  const [balance, setBalance] = useState(null);
+  const [pendingReward, setPendingReward] = useState(null);
 
   const tokenAddress = '0xB4b628464F499118340A8Ddf805EF9E18B624310';
-  const tokenContract = new ethers.Contract(tokenAddress, tokenAbi, provider);
-
-  const shortAddress = (addr) => {
-    return addr ? `${addr.slice(0, 6)}...${addr.slice(-4)}` : '';
-  };
+  const tokenABI = [
+    'function balanceOf(address) view returns (uint256)',
+    'function pendingReward(address) view returns (uint256)'
+  ];
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchInfo = async () => {
       try {
-        const bal = await tokenContract.balanceOf(account);
-        const reward = await tokenContract.calculateReward(account);
-        setBalance(ethers.formatUnits(bal, 18));
-        setRewards(ethers.formatUnits(reward, 18));
+        const signer = provider.getSigner();
+        const contract = new ethers.Contract(tokenAddress, tokenABI, signer);
+
+        const [bal, reward] = await Promise.all([
+          contract.balanceOf(account),
+          contract.pendingReward(account)
+        ]);
+
+        setBalance(formatUnits(bal, 18));
+        setPendingReward(formatUnits(reward, 18));
       } catch (err) {
-        console.error('Failed to load GLF info:', err);
+        console.error('Failed to fetch GLF info:', err);
       }
     };
 
-    if (account && provider) {
-      fetchData();
+    if (provider && account) {
+      fetchInfo();
     }
   }, [account, provider]);
 
+  const shortenAddress = (addr) => `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+
   return (
-    <div className="bg-green-800 bg-opacity-20 p-6 rounded-2xl shadow-md border border-green-500">
-      <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-green-300">
-        <FaLeaf /> Your GLF Info
-      </h2>
+    <div className="bg-gray-800 rounded-2xl p-4 shadow-md space-y-2">
+      <div className="text-sm text-gray-400">Connected Wallet:</div>
+      <div className="text-lg font-mono">{shortenAddress(account)}</div>
 
-      <div className="space-y-2 text-sm sm:text-base">
+      <div className="flex justify-between pt-2 border-t border-gray-700 mt-2">
         <div>
-          <span className="font-semibold text-gray-400">Wallet:</span>{' '}
-          <span className="text-green-100">{shortAddress(account)}</span>
+          <div className="text-sm text-gray-400">GLF Balance</div>
+          <div className="text-xl font-semibold text-green-400">{balance ?? '...'}</div>
         </div>
-
         <div>
-          <span className="font-semibold text-gray-400">GLF Balance:</span>{' '}
-          <span className="text-white font-bold">{Number(balance).toFixed(6)} GLF</span>
-        </div>
-
-        <div>
-          <span className="font-semibold text-gray-400">Pending Rewards:</span>{' '}
-          <span className="text-yellow-300 font-bold">{Number(rewards).toFixed(6)} GLF</span>
+          <div className="text-sm text-gray-400 text-right">Pending Reward</div>
+          <div className="text-xl font-semibold text-yellow-400 text-right">
+            {pendingReward ?? '...'}
+          </div>
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ethers } from 'ethers';
+import { Contract } from 'ethers';
 import tokenABI from '../abis/tokenABI.json';
 
 const tokenAddress = '0xB4b628464F499118340A8Ddf805EF9E18B624310';
@@ -13,15 +13,15 @@ const ClaimReward = ({ provider, account, setNotification }) => {
 
     try {
       setLoading(true);
-      const signer = await provider.getSigner(); // Note the await
-      const contract = new ethers.Contract(tokenAddress, tokenABI, signer);
+      const signer = await provider.getSigner();
+      const contract = new Contract(tokenAddress, tokenABI, signer);
       const tx = await contract.getReward();
       setTxHash(tx.hash);
       await tx.wait();
-      setNotification?.({ message: "✅ Reward claimed successfully!", type: "success" });
-    } catch (error) {
-      console.error("Claim failed:", error);
-      setNotification?.({ message: "❌ Failed to claim reward.", type: "error" });
+      setNotification?.({ message: '✅ Reward claimed!', type: 'success' });
+    } catch (err) {
+      console.error(err);
+      setNotification?.({ message: '❌ Claim failed.', type: 'error' });
     } finally {
       setLoading(false);
     }

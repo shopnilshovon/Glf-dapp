@@ -10,7 +10,7 @@ const ClaimReward = ({ provider, account, setNotification = () => {} }) => {
 
   const claimReward = async () => {
     if (!provider || !account) {
-      setNotification({ message: '❌ Provider or Account is missing', type: 'error' });
+      setNotification({ message: '❌ Wallet not connected.', type: 'error' });
       return;
     }
 
@@ -20,23 +20,24 @@ const ClaimReward = ({ provider, account, setNotification = () => {} }) => {
       const signer = provider.getSigner();
       const contract = new Contract(tokenAddress, tokenABI, signer);
 
-      // ✅ Replace earned() with pendingReward()
-      const pending = await contract.pendingReward(account);
+      // Check if user has any pending rewards
+      const earned = await contract.pendingReward(account);
 
-      if (pending.eq(0)) {
-        setNotification({ message: '⚠️ Nothing to claim', type: 'warning' });
+      if (earned.eq(0)) {
+        setNotification({ message: '⚠️ No rewards available to claim.', type: 'warning' });
         setLoading(false);
         return;
       }
 
-      const tx = await contract.getReward();
+      // Call claimReward function
+      const tx = await contract.claimReward();
       setTxHash(tx.hash);
       await tx.wait();
 
       setNotification({ message: '✅ Reward claimed successfully!', type: 'success' });
     } catch (err) {
       console.error("Claim error:", err);
-      setNotification({ message: '❌ Claim failed', type: 'error' });
+      setNotification({ message: '❌ Failed to claim reward.', type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -56,7 +57,7 @@ const ClaimReward = ({ provider, account, setNotification = () => {} }) => {
 
       {txHash && (
         <p className="text-sm mt-2 text-gray-300">
-          Tx Link:{' '}
+          Transaction:{' '}
           <a
             href={`https://polygonscan.com/tx/${txHash}`}
             target="_blank"

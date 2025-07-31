@@ -13,28 +13,22 @@ const GLFInfo = ({ account, provider }) => {
   const [pending, setPending] = useState(null);
 
   useEffect(() => {
-    if (!account || !provider) {
-      console.log("⛔ No account or provider");
-      return;
-    }
+    if (!account || !provider) return;
 
     const fetchData = async () => {
       try {
-        console.log("🔄 Fetching with account:", account);
-        console.log("🔌 Provider:", provider);
-
         const contract = new ethers.Contract(tokenAddress, tokenABI, provider);
 
-        const rawBalance = await contract.balanceOf(account);
-        const rawPending = await contract.getPendingReward(account);
+        // ✅ Call functions safely
+        const [rawBal, rawPending] = await Promise.all([
+          contract.balanceOf(account),
+          contract.getPendingReward(account)
+        ]);
 
-        console.log("✅ Raw balance:", rawBalance);
-        console.log("✅ Raw pending:", rawPending);
-
-        setBalance(Number(formatUnits(rawBalance, 18)));
+        setBalance(Number(formatUnits(rawBal, 18)));
         setPending(Number(formatUnits(rawPending, 18)));
       } catch (err) {
-        console.error("❌ Error fetching balance or rewards:", err);
+        console.error("❌ Error fetching token data:", err);
       }
     };
 
@@ -45,7 +39,7 @@ const GLFInfo = ({ account, provider }) => {
 
   return (
     <div className="bg-gray-800 p-4 rounded-2xl shadow-md space-y-2 text-sm sm:text-base">
-      <p><strong>Wallet:</strong> {shortAddress(account)}</p>
+      <p><strong>Wallet:</strong> {account ? shortAddress(account) : 'Not Connected'}</p>
       <p><strong>GLF Balance:</strong> {balance !== null ? `${balance.toFixed(4)} GLF` : 'Loading...'}</p>
       <p><strong>Pending Rewards:</strong> {pending !== null ? `${pending.toFixed(6)} GLF` : 'Loading...'}</p>
     </div>

@@ -13,14 +13,16 @@ const ClaimReward = ({ provider, account, setNotification }) => {
 
     try {
       setLoading(true);
-      const signer = await provider.getSigner();
+      const signer = provider.getSigner();
       const contract = new Contract(tokenAddress, tokenABI, signer);
-      const tx = await contract.getReward();
+
+      const tx = await contract.claimReward(); // ✅ FIXED FUNCTION NAME
       setTxHash(tx.hash);
       await tx.wait();
+
       setNotification?.({ message: '✅ Reward claimed!', type: 'success' });
     } catch (err) {
-      console.error(err);
+      console.error('Claim error:', err);
       setNotification?.({ message: '❌ Claim failed.', type: 'error' });
     } finally {
       setLoading(false);
@@ -39,7 +41,15 @@ const ClaimReward = ({ provider, account, setNotification }) => {
 
       {txHash && (
         <p className="text-sm mt-2 text-gray-300">
-          View Tx: <a href={`https://polygonscan.com/tx/${txHash}`} target="_blank" rel="noopener noreferrer" className="underline text-blue-400">PolygonScan</a>
+          View Tx:{' '}
+          <a
+            href={`https://polygonscan.com/tx/${txHash}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline text-blue-400"
+          >
+            PolygonScan
+          </a>
         </p>
       )}
     </div>

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 
-const WalletConnect = ({ onConnect }) => {
-  const [account, setAccount] = useState(null);
+const WalletConnect = ({ setAccount }) => {
+  const [account, setLocalAccount] = useState(null);
 
   const switchToPolygon = async () => {
     const polygonChainId = "0x89"; // 137 in hex
@@ -22,8 +22,8 @@ const WalletConnect = ({ onConnect }) => {
         const [address] = await window.ethereum.request({
           method: "eth_requestAccounts",
         });
+        setLocalAccount(address);
         setAccount(address);
-        onConnect?.(address);
         await switchToPolygon();
       } catch (err) {
         console.error("Wallet connect error:", err);
@@ -35,6 +35,7 @@ const WalletConnect = ({ onConnect }) => {
 
   useEffect(() => {
     if (window.ethereum && window.ethereum.selectedAddress) {
+      setLocalAccount(window.ethereum.selectedAddress);
       setAccount(window.ethereum.selectedAddress);
     }
   }, []);

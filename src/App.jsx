@@ -1,49 +1,53 @@
 import React, { useEffect, useState } from 'react';
 import WalletConnect from './components/WalletConnect';
-import GLFInfo from './components/GLFInfo'; // ✅ Added line
+import BalanceInfo from './components/BalanceInfo';
 import ClaimReward from './components/ClaimReward';
 import TransactionHistory from './components/TransactionHistory';
+import RewardRateInfo from './components/RewardRateInfo';
 import Notifications from './components/Notifications';
 
 const App = () => {
-  const [account, setAccount] = useState(null);
-  const [provider, setProvider] = useState(null);
-  const [notification, setNotification] = useState({ message: '', type: '' });
+const [account, setAccount] = useState(null);
+const [provider, setProvider] = useState(null);
+const [notification, setNotification] = useState({ message: '', type: '' });
 
-  useEffect(() => {
-    if (notification.message) {
-      const timer = setTimeout(() => {
-        setNotification({ message: '', type: '' });
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [notification]);
+useEffect(() => {
+if (notification.message) {
+const timer = setTimeout(() => {
+setNotification({ message: '', type: '' });
+}, 3000);
+return () => clearTimeout(timer);
+}
+}, [notification]);
 
-  return (
-    <div className="min-h-screen bg-gray-900 text-white p-4">
-      <div className="max-w-2xl mx-auto space-y-6">
+return (
+<div className="min-h-screen bg-gray-900 text-white p-4">
+<div className="max-w-2xl mx-auto space-y-6">
 
-        <h1 className="text-3xl font-bold text-center">🌿 GreenLeaf DApp</h1>
+<h1 className="text-3xl font-bold text-center">🌿 GreenLeaf DApp</h1>  
 
-        <Notifications message={notification.message} type={notification.type} />
+    <Notifications message={notification.message} type={notification.type} />  
 
-        <WalletConnect
-          setAccount={setAccount}
-          setProvider={setProvider}
-          setNotification={setNotification}
-        />
+    <WalletConnect  
+      setAccount={setAccount}  
+      setProvider={setProvider}  
+      setNotification={setNotification}  
+    />  
 
-        {account && provider && (
-          <>
-            <GLFInfo account={account} provider={provider} /> {/* ✅ New Stylish Info Block */}
-            <ClaimReward account={account} provider={provider} setNotification={setNotification} />
-            <TransactionHistory account={account} />
-          </>
-        )}
+    {account && provider && (  
+      <>  
+        <BalanceInfo account={account} provider={provider} />  
+        <RewardRateInfo provider={provider} />  
+        <ClaimReward account={account} provider={provider} setNotification={setNotification} />  
+        <TransactionHistory account={account} />  
+      </>  
+    )}  
 
-      </div>
-    </div>
-  );
+  </div>  
+</div>
+
+);
 };
 
 export default App;
+

@@ -5,15 +5,15 @@ import ClaimReward from './components/ClaimReward';
 import TransactionHistory from './components/TransactionHistory';
 import Notifications from './components/Notifications';
 import RewardRateInfo from './components/RewardRateInfo';
-import Roadmap from './components/Roadmap';         // ✅ Already added
-import Tokenomics from './components/Tokenomics';   // ✅ Newly added
+import Roadmap from './components/Roadmap';
+import Tokenomics from './components/Tokenomics';
 
 const App = () => {
   const [account, setAccount] = useState(null);
   const [provider, setProvider] = useState(null);
   const [notification, setNotification] = useState({ message: '', type: '' });
+  const [refreshHistory, setRefreshHistory] = useState(0); // 🔁 trigger history refresh
 
-  // Auto clear notifications after 3 sec
   useEffect(() => {
     if (notification.message) {
       const timer = setTimeout(() => {
@@ -44,14 +44,14 @@ const App = () => {
               account={account}
               provider={provider}
               setNotification={setNotification}
+              onClaim={() => setRefreshHistory(prev => prev + 1)} // ✅ refresh trigger
             />
-            <TransactionHistory account={account} />
+            <TransactionHistory account={account} refresh={refreshHistory} />
           </>
         )}
 
-        {/* 📌 Extra Sections */}
-        <Tokenomics />  {/* ✅ Tokenomics block */}
-        <Roadmap />     {/* ✅ Roadmap block */}
+        <Tokenomics />
+        <Roadmap />
       </div>
     </div>
   );

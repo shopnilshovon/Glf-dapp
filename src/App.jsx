@@ -12,7 +12,7 @@ const App = () => {
   const [account, setAccount] = useState(null);
   const [provider, setProvider] = useState(null);
   const [notification, setNotification] = useState({ message: '', type: '' });
-  const [refreshHistory, setRefreshHistory] = useState(0); // 🔁 trigger history refresh
+  const [refreshCounter, setRefreshCounter] = useState(0); // 🔄 for both GLF & history
 
   useEffect(() => {
     if (notification.message) {
@@ -38,15 +38,15 @@ const App = () => {
 
         {account && provider && (
           <>
-            <GLFInfo account={account} provider={provider} />
+            <GLFInfo account={account} provider={provider} refresh={refreshCounter} />
             <RewardRateInfo provider={provider} />
             <ClaimReward
               account={account}
               provider={provider}
               setNotification={setNotification}
-              onClaim={() => setRefreshHistory(prev => prev + 1)} // ✅ refresh trigger
+              onClaim={() => setRefreshCounter((prev) => prev + 1)} // 🔄 triggers both GLFInfo & History
             />
-            <TransactionHistory account={account} refresh={refreshHistory} />
+            <TransactionHistory account={account} refresh={refreshCounter} />
           </>
         )}
 

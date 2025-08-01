@@ -4,40 +4,72 @@ import tokenABI from '../abis/tokenABI.json';
 
 const tokenAddress = '0xB4b628464F499118340A8Ddf805EF9E18B624310';
 
-const ClaimReward = ({ provider, account, setNotification = () => {} }) => {
+const ClaimReward = ({ provider, account }) => {
   const [loading, setLoading] = useState(false);
   const [txHash, setTxHash] = useState(null);
+  const [notification, setNotification] = useState(null);
 
   const claimReward = async () => {
     if (!provider || !account) {
-      setNotification({ message: '❌ Wallet not connected.', type: 'error' });
+      showNotification('❌ Wallet not connected.', 'error');
       return;
     }
 
     try {
       setLoading(true);
-
       const signer = await provider.getSigner();
       const contract = new Contract(tokenAddress, tokenABI, signer);
 
       const earned = await contract.pendingReward(account);
-
       if (earned == 0) {
-        setNotification({ message: '⚠️ No rewards available to claim.', type: 'warning' });
+        showNotification('⚠️ No rewards available to claim.', 'warning');
         setLoading(false);
         return;
       }
 
       const tx = await contract.claimReward();
       setTxHash(tx.hash);
-
       await tx.wait();
-      setNotification({ message: '✅ Reward claimed successfully!', type: 'success' });
+
+      showNotification('✅ Reward claimed successfully!', 'success');
     } catch (err) {
       console.error("❌ Claim error:", err);
-      setNotification({ message: '❌ Failed to claim reward.', type: 'error' });
+      showNotification('❌ Failed to claim reward.', 'error');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // ✅ Notification Helper
+  const showNotification = (message, type) => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 4000);
+  };
+
+  // ✅ Dynamic Styles
+  const getNotificationStyles = (type) => {
+    switch (type) {
+      case 'success':
+        return 'bg-green-700 text-white';
+      case 'warning':
+        return 'bg-yellow-600 text-black';
+      case 'error':
+        return 'bg-red-700 text-white';
+      default:
+        return 'bg-gray-700 text-white';
+    }
+  };
+
+  const getNotificationIcon = (type) => {
+    switch (type) {
+      case 'success':
+        return '✅';
+      case 'warning':
+        return '⚠️';
+      case 'error':
+        return '❌';
+      default:
+        return 'ℹ️';
     }
   };
 
@@ -68,6 +100,20 @@ const ClaimReward = ({ provider, account, setNotification = () => {} }) => {
             View on PolygonScan
           </a>
         </p>
+      )}
+
+      {/* ✅ Dynamic Notification Box */}
+      {notification && (
+        <div className="mt-4 flex justify-center">
+          <div
+            className={`px-4 py-2 rounded-lg shadow-md flex items-center space-x-2 text-sm ${getNotificationStyles(
+              notification.type
+            )}`}
+          >
+            <span className="text-xl">{getNotificationIcon(notification.type)}</span>
+            <span>{notification.message}</span>
+          </div>
+        </div>
       )}
     </div>
   );

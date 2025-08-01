@@ -62,17 +62,17 @@ const WalletConnect = ({ setAccount, setProvider, setNotification }) => {
   }, []);
 
   return (
-    <div className="mb-6">
+    <div className="mb-8 text-center">
       {localAccount ? (
-        <div className="text-sm text-green-500 font-mono">
+        <div className="inline-block px-4 py-2 text-sm font-mono bg-gradient-to-r from-green-600 to-emerald-500 text-white rounded-full shadow-lg animate-pulse">
           ✅ Connected: {localAccount.slice(0, 6)}...{localAccount.slice(-4)}
         </div>
       ) : (
         <button
           onClick={connectWallet}
-          className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded"
+          className="px-6 py-3 rounded-full bg-gradient-to-r from-purple-600 to-blue-500 text-white font-semibold shadow-xl hover:from-purple-700 hover:to-blue-600 hover:scale-105 transition-all duration-300"
         >
-          Connect Wallet
+          🔗 Connect Wallet
         </button>
       )}
     </div>

@@ -5,7 +5,8 @@ import ClaimReward from './components/ClaimReward';
 import TransactionHistory from './components/TransactionHistory';
 import Notifications from './components/Notifications';
 import RewardRateInfo from './components/RewardRateInfo';
-import Roadmap from './components/Roadmap'; // ✅ New Import
+import Roadmap from './components/Roadmap';         // ✅ Already added
+import Tokenomics from './components/Tokenomics';   // ✅ Newly added
 
 const App = () => {
   const [account, setAccount] = useState(null);
@@ -48,8 +49,9 @@ const App = () => {
           </>
         )}
 
-        {/* ✅ Add Roadmap at the bottom */}
-        <Roadmap />
+        {/* 📌 Extra Sections */}
+        <Tokenomics />  {/* ✅ Tokenomics block */}
+        <Roadmap />     {/* ✅ Roadmap block */}
       </div>
     </div>
   );

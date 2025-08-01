@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Contract, parseUnits } from 'ethers';
+import { Contract } from 'ethers';
 import tokenABI from '../abis/tokenABI.json';
 
 const tokenAddress = '0xB4b628464F499118340A8Ddf805EF9E18B624310';
@@ -16,17 +16,11 @@ const ClaimReward = ({ provider, account, setNotification = () => {} }) => {
 
     try {
       setLoading(true);
-      console.log("🔍 Provider:", provider);
 
       const signer = await provider.getSigner();
-      const signerAddress = await signer.getAddress();
-      console.log("✅ Signer Address:", signerAddress);
-
       const contract = new Contract(tokenAddress, tokenABI, signer);
 
-      // Optional: Check pending reward
       const earned = await contract.pendingReward(account);
-      console.log("💰 Pending reward (raw):", earned.toString());
 
       if (earned == 0) {
         setNotification({ message: '⚠️ No rewards available to claim.', type: 'warning' });
@@ -34,14 +28,10 @@ const ClaimReward = ({ provider, account, setNotification = () => {} }) => {
         return;
       }
 
-      console.log("🚀 Sending claimReward tx...");
       const tx = await contract.claimReward();
-      console.log("📤 Transaction sent:", tx.hash);
       setTxHash(tx.hash);
 
       await tx.wait();
-      console.log("✅ Transaction confirmed");
-
       setNotification({ message: '✅ Reward claimed successfully!', type: 'success' });
     } catch (err) {
       console.error("❌ Claim error:", err);
@@ -52,23 +42,28 @@ const ClaimReward = ({ provider, account, setNotification = () => {} }) => {
   };
 
   return (
-    <div className="mt-4">
+    <div className="mt-6 text-center">
       <button
         onClick={claimReward}
-        className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
         disabled={loading}
+        className={`transition-all duration-300 px-6 py-2 rounded-full text-sm font-semibold shadow-md 
+          ${
+            loading
+              ? 'bg-gray-600 cursor-not-allowed'
+              : 'bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white'
+          }`}
       >
-        {loading ? 'Claiming...' : 'Claim Reward'}
+        {loading ? 'Claiming...' : '🌿 Claim Reward'}
       </button>
 
       {txHash && (
-        <p className="text-sm mt-2 text-gray-300">
+        <p className="text-xs mt-3 text-gray-300">
           Transaction:{' '}
           <a
             href={`https://polygonscan.com/tx/${txHash}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="underline text-blue-400"
+            className="underline text-blue-400 hover:text-blue-300"
           >
             View on PolygonScan
           </a>

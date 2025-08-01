@@ -1,32 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 
-const WalletConnect = ({ setAccount, setProvider, setNotification }) => {
-  const [localAccount, setLocalAccount] = useState(null);
+const WalletConnect = ({ account, setAccount, setProvider, setNotification }) => {
+  const [connecting, setConnecting] = useState(false);
 
   const switchToPolygon = async () => {
-    const polygonChainId = "0x89"; // Polygon Mainnet
     try {
       await window.ethereum.request({
         method: "wallet_switchEthereumChain",
-        params: [{ chainId: polygonChainId }],
+        params: [{ chainId: "0x89" }], // Polygon Mainnet
       });
-    } catch (switchError) {
-      console.error("Chain switch error:", switchError);
-      setNotification({
-        message: "⚠️ Failed to switch to Polygon network.",
-        type: "error",
-      });
+    } catch (error) {
+      console.error("Switch error:", error);
+      setNotification({ message: "⚠️ Failed to switch to Polygon.", type: "error" });
     }
   };
 
   const connectWallet = async () => {
-    if (typeof window.ethereum === "undefined") {
+    if (!window.ethereum) {
       alert("🦊 Please install MetaMask!");
       return;
     }
 
     try {
+      setConnecting(true);
       const [address] = await window.ethereum.request({
         method: "eth_requestAccounts",
       });
@@ -35,44 +32,57 @@ const WalletConnect = ({ setAccount, setProvider, setNotification }) => {
 
       const web3Provider = new ethers.BrowserProvider(window.ethereum);
 
-      setLocalAccount(address);
+      localStorage.setItem("account", address);
       setAccount(address);
       setProvider(web3Provider);
 
       setNotification({ message: "✅ Wallet connected!", type: "success" });
-    } catch (error) {
-      console.error("Wallet connect failed:", error);
+    } catch (err) {
+      console.error("Wallet connection error:", err);
       setNotification({ message: "❌ Wallet connection failed.", type: "error" });
+    } finally {
+      setConnecting(false);
     }
   };
 
-  useEffect(() => {
-    const initialize = async () => {
-      if (window.ethereum && window.ethereum.selectedAddress) {
-        const address = window.ethereum.selectedAddress;
-        const web3Provider = new ethers.BrowserProvider(window.ethereum);
+  const disconnectWallet = () => {
+    localStorage.removeItem("account");
+    setAccount(null);
+    setProvider(null);
+    setNotification({ message: "🔌 Wallet disconnected.", type: "warning" });
+  };
 
-        setLocalAccount(address);
-        setAccount(address);
+  useEffect(() => {
+    const autoConnect = async () => {
+      const savedAccount = localStorage.getItem("account");
+      if (savedAccount && window.ethereum) {
+        const web3Provider = new ethers.BrowserProvider(window.ethereum);
+        setAccount(savedAccount);
         setProvider(web3Provider);
       }
     };
-
-    initialize();
+    autoConnect();
   }, []);
 
   return (
     <div className="mb-8 text-center">
-      {localAccount ? (
-        <div className="inline-block px-4 py-2 text-sm font-mono bg-gradient-to-r from-green-600 to-emerald-500 text-white rounded-full shadow-lg animate-pulse">
-          ✅ Connected: {localAccount.slice(0, 6)}...{localAccount.slice(-4)}
+      {account ? (
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-500 text-white rounded-full shadow-md font-mono">
+          ✅ {account.slice(0, 6)}...{account.slice(-4)}
+          <button
+            onClick={disconnectWallet}
+            className="ml-2 px-2 py-0.5 text-xs bg-red-600 hover:bg-red-700 rounded-full transition"
+          >
+            Disconnect
+          </button>
         </div>
       ) : (
         <button
           onClick={connectWallet}
+          disabled={connecting}
           className="px-6 py-3 rounded-full bg-gradient-to-r from-purple-600 to-blue-500 text-white font-semibold shadow-xl hover:from-purple-700 hover:to-blue-600 hover:scale-105 transition-all duration-300"
         >
-          🔗 Connect Wallet
+          {connecting ? "Connecting..." : "🔗 Connect Wallet"}
         </button>
       )}
     </div>

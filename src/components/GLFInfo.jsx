@@ -36,7 +36,8 @@ const GLFInfo = ({ account, provider }) => {
 
   return (
     <div className="rounded-2xl bg-gradient-to-br from-gray-800 via-gray-900 to-black border border-green-600 p-6 shadow-xl text-white space-y-6">
-      
+
+      {/* Heading */}
       <div className="text-center">
         <h2 className="text-2xl font-extrabold bg-gradient-to-r from-green-400 via-lime-300 to-green-500 bg-clip-text text-transparent">
           🌿 Your GLF Overview
@@ -46,6 +47,7 @@ const GLFInfo = ({ account, provider }) => {
         </p>
       </div>
 
+      {/* GLF Balance and Pending Rewards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-center">
         <div className="bg-gray-900 rounded-xl p-5 shadow-inner border border-green-500 hover:scale-105 transition-transform duration-200">
           <p className="text-sm text-gray-400">GLF Balance</p>

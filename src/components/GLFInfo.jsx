@@ -11,7 +11,6 @@ const tokenABI = [
 const GLFInfo = ({ account, provider }) => {
   const [balance, setBalance] = useState(null);
   const [pending, setPending] = useState(null);
-  const [fadeIn, setFadeIn] = useState(false);
 
   useEffect(() => {
     if (!account || !provider) return;
@@ -19,15 +18,12 @@ const GLFInfo = ({ account, provider }) => {
     const fetchData = async () => {
       try {
         const contract = new ethers.Contract(tokenAddress, tokenABI, provider);
-
         const [rawBal, rawPending] = await Promise.all([
           contract.balanceOf(account),
-          contract.pendingReward(account) // ✅ Fixed here
+          contract.pendingReward(account)
         ]);
-
         setBalance(Number(formatUnits(rawBal, 18)));
         setPending(Number(formatUnits(rawPending, 18)));
-        setFadeIn(true); // 🪄 Trigger fade-in animation
       } catch (err) {
         console.error("❌ Error fetching token data:", err);
       }
@@ -39,23 +35,29 @@ const GLFInfo = ({ account, provider }) => {
   const shortAddress = (addr) => `${addr.slice(0, 6)}...${addr.slice(-4)}`;
 
   return (
-    <div
-      className={`transition-opacity duration-700 ease-in-out ${
-        fadeIn ? 'opacity-100' : 'opacity-0'
-      } bg-gradient-to-br from-green-800 to-green-600 text-white p-5 rounded-2xl shadow-lg space-y-3`}
-    >
-      <p className="text-sm sm:text-base">
-        <span className="font-semibold text-gray-300">Wallet:</span>{' '}
-        {account ? shortAddress(account) : 'Not Connected'}
-      </p>
-      <p className="text-sm sm:text-base">
-        <span className="font-semibold text-gray-300">GLF Balance:</span>{' '}
-        {balance !== null ? `${balance.toFixed(4)} GLF` : 'Loading...'}
-      </p>
-      <p className="text-sm sm:text-base">
-        <span className="font-semibold text-gray-300">Pending Rewards:</span>{' '}
-        {pending !== null ? `${pending.toFixed(6)} GLF` : 'Loading...'}
-      </p>
+    <div className="rounded-2xl bg-gray-800 border border-green-700 p-6 shadow-xl text-white space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-bold text-green-400">🌿 Your GLF Overview</h2>
+        <span className="text-xs sm:text-sm bg-gray-700 text-gray-300 px-3 py-1 rounded-full font-mono">
+          {account ? shortAddress(account) : 'Not Connected'}
+        </span>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 text-center">
+        <div className="bg-gray-900 rounded-xl p-4 shadow-inner border border-green-600">
+          <p className="text-sm text-gray-400">GLF Balance</p>
+          <p className="text-xl font-bold text-green-300">
+            {balance !== null ? `${balance.toFixed(4)} GLF` : 'Loading...'}
+          </p>
+        </div>
+
+        <div className="bg-gray-900 rounded-xl p-4 shadow-inner border border-yellow-500">
+          <p className="text-sm text-gray-400">Pending Rewards</p>
+          <p className="text-xl font-bold text-yellow-300">
+            {pending !== null ? `${pending.toFixed(6)} GLF` : 'Loading...'}
+          </p>
+        </div>
+      </div>
     </div>
   );
 };

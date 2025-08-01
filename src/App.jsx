@@ -9,10 +9,10 @@ import Roadmap from './components/Roadmap';
 import Tokenomics from './components/Tokenomics';
 
 const App = () => {
-  const [account, setAccount] = useState(null);
+  const [account, setAccount] = useState(localStorage.getItem("account") || null);
   const [provider, setProvider] = useState(null);
   const [notification, setNotification] = useState({ message: '', type: '' });
-  const [refreshCounter, setRefreshCounter] = useState(0); // 🔄 for both GLF & history
+  const [refreshCounter, setRefreshCounter] = useState(0);
 
   useEffect(() => {
     if (notification.message) {
@@ -31,6 +31,7 @@ const App = () => {
         <Notifications message={notification.message} type={notification.type} />
 
         <WalletConnect
+          account={account}
           setAccount={setAccount}
           setProvider={setProvider}
           setNotification={setNotification}
@@ -44,7 +45,7 @@ const App = () => {
               account={account}
               provider={provider}
               setNotification={setNotification}
-              onClaim={() => setRefreshCounter((prev) => prev + 1)} // 🔄 triggers both GLFInfo & History
+              onClaim={() => setRefreshCounter((prev) => prev + 1)}
             />
             <TransactionHistory account={account} refresh={refreshCounter} />
           </>

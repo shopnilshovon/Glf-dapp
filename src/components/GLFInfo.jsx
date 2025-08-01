@@ -46,15 +46,15 @@ const GLFInfo = ({ account, provider }) => {
       <div className="grid grid-cols-2 gap-4 text-center">
         <div className="bg-gray-900 rounded-xl p-4 shadow-inner border border-green-600">
           <p className="text-sm text-gray-400">GLF Balance</p>
-          <p className="text-xl font-bold text-green-300">
-            {balance !== null ? `${balance.toFixed(4)} GLF` : 'Loading...'}
+          <p className="text-2xl font-bold text-green-300">
+            {balance !== null ? `${balance.toFixed(2)} GLF` : 'Loading...'}
           </p>
         </div>
 
         <div className="bg-gray-900 rounded-xl p-4 shadow-inner border border-yellow-500">
           <p className="text-sm text-gray-400">Pending Rewards</p>
-          <p className="text-xl font-bold text-yellow-300">
-            {pending !== null ? `${pending.toFixed(6)} GLF` : 'Loading...'}
+          <p className="text-2xl font-bold text-yellow-300">
+            {pending !== null ? `${pending.toFixed(2)} GLF` : 'Loading...'}
           </p>
         </div>
       </div>

@@ -4,12 +4,12 @@ import tokenABI from '../abis/tokenABI.json';
 
 const tokenAddress = '0xB4b628464F499118340A8Ddf805EF9E18B624310';
 
-const ClaimReward = ({ provider, account, setNotification, onClaim }) => {
+const ClaimReward = ({ provider, account, setNotification }) => {
   const [loading, setLoading] = useState(false);
 
   const claimReward = async () => {
     if (!provider || !account) {
-      setNotification({ message: '❌ Wallet not connected.', type: 'error' });
+      showNotification('❌ Wallet not connected.', 'error');
       return;
     }
 
@@ -19,8 +19,8 @@ const ClaimReward = ({ provider, account, setNotification, onClaim }) => {
       const contract = new Contract(tokenAddress, tokenABI, signer);
 
       const earned = await contract.pendingReward(account);
-      if (earned == 0) {
-        setNotification({ message: '⚠️ No rewards available to claim.', type: 'warning' });
+      if (earned.toString() === '0') {
+        showNotification('⚠️ No rewards available to claim.', 'warning');
         setLoading(false);
         return;
       }
@@ -28,7 +28,6 @@ const ClaimReward = ({ provider, account, setNotification, onClaim }) => {
       const tx = await contract.claimReward();
       await tx.wait();
 
-      // Save to localStorage
       const rewardGLF = parseFloat(earned.toString()) / 1e18;
       const newTx = {
         amount: rewardGLF.toFixed(2),
@@ -40,14 +39,21 @@ const ClaimReward = ({ provider, account, setNotification, onClaim }) => {
       const updated = [newTx, ...existing].slice(0, 10);
       localStorage.setItem(key, JSON.stringify(updated));
 
-      setNotification({ message: '✅ Reward claimed successfully!', type: 'success' });
-      if (onClaim) onClaim(); // 🔁 trigger parent refresh
+      showNotification('✅ Reward claimed successfully!', 'success');
     } catch (err) {
       console.error("❌ Claim error:", err);
-      setNotification({ message: '❌ Failed to claim reward.', type: 'error' });
+      showNotification('❌ Failed to claim reward.', 'error');
     } finally {
       setLoading(false);
     }
+  };
+
+  const showNotification = (message, type) => {
+    setNotification({
+      message,
+      type,
+      timestamp: Date.now(),
+    });
   };
 
   return (

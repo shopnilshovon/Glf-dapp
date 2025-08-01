@@ -4,10 +4,8 @@ import tokenABI from '../abis/tokenABI.json';
 
 const tokenAddress = '0xB4b628464F499118340A8Ddf805EF9E18B624310';
 
-const ClaimReward = ({ provider, account }) => {
+const ClaimReward = ({ provider, account, setNotification }) => {
   const [loading, setLoading] = useState(false);
-  const [txHash, setTxHash] = useState(null);
-  const [notification, setNotification] = useState(null);
 
   const claimReward = async () => {
     if (!provider || !account) {
@@ -28,8 +26,19 @@ const ClaimReward = ({ provider, account }) => {
       }
 
       const tx = await contract.claimReward();
-      setTxHash(tx.hash);
       await tx.wait();
+
+      // ✅ Save to localStorage
+      const rewardGLF = parseFloat(earned.toString()) / 1e18;
+      const newTx = {
+        amount: rewardGLF.toFixed(2),
+        timestamp: Date.now(),
+      };
+
+      const key = `txHistory-${account}`;
+      const existing = JSON.parse(localStorage.getItem(key)) || [];
+      const updated = [newTx, ...existing].slice(0, 10); // Only latest 10
+      localStorage.setItem(key, JSON.stringify(updated));
 
       showNotification('✅ Reward claimed successfully!', 'success');
     } catch (err) {
@@ -40,37 +49,8 @@ const ClaimReward = ({ provider, account }) => {
     }
   };
 
-  // ✅ Notification Helper
   const showNotification = (message, type) => {
     setNotification({ message, type });
-    setTimeout(() => setNotification(null), 4000);
-  };
-
-  // ✅ Dynamic Styles
-  const getNotificationStyles = (type) => {
-    switch (type) {
-      case 'success':
-        return 'bg-green-700 text-white';
-      case 'warning':
-        return 'bg-yellow-600 text-black';
-      case 'error':
-        return 'bg-red-700 text-white';
-      default:
-        return 'bg-gray-700 text-white';
-    }
-  };
-
-  const getNotificationIcon = (type) => {
-    switch (type) {
-      case 'success':
-        return '✅';
-      case 'warning':
-        return '⚠️';
-      case 'error':
-        return '❌';
-      default:
-        return 'ℹ️';
-    }
   };
 
   return (
@@ -87,34 +67,6 @@ const ClaimReward = ({ provider, account }) => {
       >
         {loading ? 'Claiming...' : '🌿 Claim Reward'}
       </button>
-
-      {txHash && (
-        <p className="text-xs mt-3 text-gray-300">
-          Transaction:{' '}
-          <a
-            href={`https://polygonscan.com/tx/${txHash}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline text-blue-400 hover:text-blue-300"
-          >
-            View on PolygonScan
-          </a>
-        </p>
-      )}
-
-      {/* ✅ Dynamic Notification Box */}
-      {notification && (
-        <div className="mt-4 flex justify-center">
-          <div
-            className={`px-4 py-2 rounded-lg shadow-md flex items-center space-x-2 text-sm ${getNotificationStyles(
-              notification.type
-            )}`}
-          >
-            <span className="text-xl">{getNotificationIcon(notification.type)}</span>
-            <span>{notification.message}</span>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

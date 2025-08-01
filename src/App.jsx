@@ -5,13 +5,14 @@ import ClaimReward from './components/ClaimReward';
 import TransactionHistory from './components/TransactionHistory';
 import Notifications from './components/Notifications';
 import RewardRateInfo from './components/RewardRateInfo';
+import Roadmap from './components/Roadmap'; // ✅ New Import
 
 const App = () => {
   const [account, setAccount] = useState(null);
   const [provider, setProvider] = useState(null);
   const [notification, setNotification] = useState({ message: '', type: '' });
 
-  // Notification auto clear after 3 sec
+  // Auto clear notifications after 3 sec
   useEffect(() => {
     if (notification.message) {
       const timer = setTimeout(() => {
@@ -46,6 +47,9 @@ const App = () => {
             <TransactionHistory account={account} />
           </>
         )}
+
+        {/* ✅ Add Roadmap at the bottom */}
+        <Roadmap />
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Contract } from 'ethers';
 import tokenABI from '../abis/tokenABI.json';
 
@@ -6,6 +6,24 @@ const tokenAddress = '0xB4b628464F499118340A8Ddf805EF9E18B624310';
 
 const ClaimReward = ({ provider, account, setNotification, onClaim }) => {
   const [loading, setLoading] = useState(false);
+  const [pendingReward, setPendingReward] = useState(null);
+
+  const fetchPendingReward = async () => {
+    if (!provider || !account) return;
+
+    try {
+      const signer = await provider.getSigner();
+      const contract = new Contract(tokenAddress, tokenABI, signer);
+      const earned = await contract.pendingReward(account);
+      setPendingReward(parseFloat(earned.toString()) / 1e18);
+    } catch (err) {
+      console.error("Error fetching pending reward:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchPendingReward();
+  }, [provider, account]);
 
   const claimReward = async () => {
     if (!provider || !account) {
@@ -39,6 +57,7 @@ const ClaimReward = ({ provider, account, setNotification, onClaim }) => {
       localStorage.setItem(key, JSON.stringify(updated));
 
       setNotification({ message: '✅ Reward claimed successfully!', type: 'success' });
+      setPendingReward(0); // Reset after claim
       if (onClaim) onClaim();
     } catch (err) {
       console.error('❌ Claim failed:', err);
@@ -49,13 +68,20 @@ const ClaimReward = ({ provider, account, setNotification, onClaim }) => {
   };
 
   return (
-    <div className="mt-8">
-      <div className="bg-gray-800 rounded-2xl p-6 shadow-xl text-center">
-        <h2 className="text-lg font-bold mb-4">🎁 Claim Your Pending Rewards</h2>
+    <div className="mt-10">
+      <div className="bg-gray-800 rounded-2xl p-6 shadow-xl text-center space-y-4">
+        <h2 className="text-xl font-semibold text-green-300">Claim Your GLF Rewards</h2>
+
+        {pendingReward !== null && (
+          <p className="text-sm text-gray-300 bg-gray-700 px-4 py-2 rounded-full inline-block shadow-sm">
+            You have <span className="font-bold text-green-400">{pendingReward.toFixed(3)} GLF</span> available to claim
+          </p>
+        )}
+
         <button
           onClick={claimReward}
           disabled={loading}
-          className={`transition-all duration-300 px-8 py-3 rounded-full text-base font-semibold shadow-md 
+          className={`mt-3 transition-all duration-300 px-8 py-3 rounded-full text-base font-semibold shadow-md 
             ${
               loading
                 ? 'bg-gray-600 cursor-not-allowed'

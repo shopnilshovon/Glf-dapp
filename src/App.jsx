@@ -7,6 +7,7 @@ import Notifications from './components/Notifications';
 import RewardRateInfo from './components/RewardRateInfo';
 import Roadmap from './components/Roadmap';
 import Tokenomics from './components/Tokenomics';
+import SocialLinks from './components/SocialLinks'; // Added social media buttons
 
 const App = () => {
   const [account, setAccount] = useState(localStorage.getItem("account") || null);
@@ -53,6 +54,8 @@ const App = () => {
 
         <Tokenomics />
         <Roadmap />
+        
+        <SocialLinks /> {/* Social media follow buttons */}
       </div>
     </div>
   );

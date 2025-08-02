@@ -78,6 +78,7 @@ const WalletConnect = ({ account, setAccount, setProvider, setNotification }) =>
         </div>
       ) : (
         <button
+          id="connect-btn" // ✅ Added for external CTA to trigger
           onClick={connectWallet}
           disabled={connecting}
           className="px-6 py-3 rounded-full bg-gradient-to-r from-purple-600 to-blue-500 text-white font-semibold shadow-xl hover:from-purple-700 hover:to-blue-600 hover:scale-105 transition-all duration-300"

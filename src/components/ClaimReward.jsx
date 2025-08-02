@@ -1,102 +1,91 @@
-import React, { useEffect, useState } from 'react';
-import { Contract } from 'ethers';
+import { useEffect, useState } from 'react';
+import { ethers } from 'ethers';
 import tokenABI from '../abis/tokenABI.json';
+import { toast } from 'react-toastify';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import BalanceChart from './BalanceChart'; // <-- Import the chart
 
-const tokenAddress = '0xB4b628464F499118340A8Ddf805EF9E18B624310';
+const contractAddress = '0xB4b628464F499118340A8Ddf805EF9E18B624310';
 
-const ClaimReward = ({ provider, account, setNotification, onClaim }) => {
-  const [loading, setLoading] = useState(false);
-  const [pendingReward, setPendingReward] = useState(null);
-
-  const fetchPendingReward = async () => {
-    if (!provider || !account) return;
-
-    try {
-      const signer = await provider.getSigner();
-      const contract = new Contract(tokenAddress, tokenABI, signer);
-      const earned = await contract.pendingReward(account);
-      setPendingReward(parseFloat(earned.toString()) / 1e18);
-    } catch (err) {
-      console.error("Error fetching pending reward:", err);
-    }
-  };
+export default function ClaimReward({ account }) {
+  const [pendingReward, setPendingReward] = useState('0.0');
+  const [isClaiming, setIsClaiming] = useState(false);
 
   useEffect(() => {
-    fetchPendingReward();
-  }, [provider, account]);
+    if (!account) return;
 
-  const claimReward = async () => {
-    if (!provider || !account) {
-      setNotification({ message: '❌ Wallet not connected.', type: 'error' });
+    const fetchPendingReward = async () => {
+      try {
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const contract = new ethers.Contract(contractAddress, tokenABI, provider);
+        const reward = await contract.getPendingReward(account);
+        setPendingReward(ethers.formatUnits(reward, 18));
+      } catch (error) {
+        console.error('Error fetching reward:', error);
+        setPendingReward('0.0');
+      }
+    };
+
+    fetchPendingReward();
+  }, [account]);
+
+  const handleClaim = async () => {
+    if (!account) {
+      toast.error('Please connect your wallet first.');
       return;
     }
 
+    setIsClaiming(true);
     try {
-      setLoading(true);
+      const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
-      const contract = new Contract(tokenAddress, tokenABI, signer);
-
-      const earned = await contract.pendingReward(account);
-      if (earned.toString() === '0') {
-        setNotification({ message: '⚠️ No rewards to claim.', type: 'warning' });
-        return;
-      }
+      const contract = new ethers.Contract(contractAddress, tokenABI, signer);
 
       const tx = await contract.claimReward();
+      toast.info('Transaction sent. Waiting for confirmation...');
       await tx.wait();
 
-      const rewardGLF = parseFloat(earned.toString()) / 1e18;
-      const newTx = {
-        amount: rewardGLF.toFixed(2),
-        timestamp: Date.now(),
-      };
+      toast.success(`Reward claimed successfully!`);
+      setPendingReward('0.0');
 
-      const key = `txHistory-${account}`;
-      const existing = JSON.parse(localStorage.getItem(key)) || [];
-      const updated = [newTx, ...existing].slice(0, 10);
-      localStorage.setItem(key, JSON.stringify(updated));
-
-      setNotification({ message: '✅ Reward claimed successfully!', type: 'success' });
-      setPendingReward(0);
-      if (onClaim) onClaim();
-    } catch (err) {
-      console.error('❌ Claim failed:', err);
-      setNotification({ message: '❌ Failed to claim reward.', type: 'error' });
+      const history = JSON.parse(localStorage.getItem('claimHistory') || '[]');
+      history.unshift({
+        amount: pendingReward,
+        time: new Date().toISOString(),
+      });
+      localStorage.setItem('claimHistory', JSON.stringify(history));
+    } catch (error) {
+      console.error(error);
+      toast.error('Transaction failed or rejected.');
     } finally {
-      setLoading(false);
+      setIsClaiming(false);
     }
   };
 
   return (
-    <div className="mt-10">
-      <div className="bg-gray-800 rounded-2xl p-6 shadow-xl text-center space-y-4">
-        <h2 className="text-xl font-semibold text-green-300">
-          🌿 Rewards Overview
-        </h2>
+    <Card className="bg-muted/30 p-4 rounded-2xl mt-4 shadow-md">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-xl font-bold">
+            <span className="text-green-500">🎁 GLF Reward Summary</span>
+          </CardTitle>
+        </div>
+        <CardDescription className="text-sm text-muted-foreground mt-1">
+          You have <span className="font-medium text-green-500">{pendingReward}</span> GLF pending to claim.
+        </CardDescription>
+      </CardHeader>
 
-        {pendingReward !== null && (
-          <p className="text-sm text-gray-300 bg-gray-700 px-4 py-2 rounded-full inline-block shadow-sm animate-pulse">
-            You currently have{' '}
-            <span className="font-bold text-green-400">{pendingReward.toFixed(3)} GLF</span>{' '}
-            ready to claim.
-          </p>
-        )}
+      <CardContent>
+        <Button onClick={handleClaim} disabled={isClaiming} className="w-full mb-4">
+          {isClaiming ? 'Claiming...' : 'Claim Rewards'}
+        </Button>
 
-        <button
-          onClick={claimReward}
-          disabled={loading}
-          className={`mt-3 transition-all duration-300 px-8 py-3 rounded-full text-base font-semibold shadow-md 
-            ${
-              loading
-                ? 'bg-gray-600 cursor-not-allowed'
-                : 'bg-gradient-to-r from-green-600 to-green-400 hover:from-green-500 hover:to-green-300 text-white'
-            }`}
-        >
-          {loading ? 'Claiming...' : '🎁 Claim Reward'}
-        </button>
-      </div>
-    </div>
+        <div className="mt-6">
+          <h3 className="text-md font-semibold text-muted-foreground mb-2">📈 Balance History</h3>
+          <BalanceChart account={account} />
+        </div>
+      </CardContent>
+    </Card>
   );
-};
-
-export default ClaimReward;
+}

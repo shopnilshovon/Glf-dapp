@@ -10,7 +10,6 @@ const ClaimReward = ({ provider, account, setNotification, onClaim }) => {
 
   const fetchPendingReward = async () => {
     if (!provider || !account) return;
-
     try {
       const signer = await provider.getSigner();
       const contract = new Contract(tokenAddress, tokenABI, signer);
@@ -46,18 +45,24 @@ const ClaimReward = ({ provider, account, setNotification, onClaim }) => {
       await tx.wait();
 
       const rewardGLF = parseFloat(earned.toString()) / 1e18;
-      const newTx = {
-        amount: rewardGLF.toFixed(2),
-        timestamp: Date.now(),
-      };
 
-      const key = `txHistory-${account}`;
-      const existing = JSON.parse(localStorage.getItem(key)) || [];
-      const updated = [newTx, ...existing].slice(0, 10);
-      localStorage.setItem(key, JSON.stringify(updated));
+      // ✅ Transaction History Update
+      const txData = { amount: rewardGLF.toFixed(3), timestamp: Date.now() };
+      const txKey = `txHistory-${account}`;
+      const prevTxs = JSON.parse(localStorage.getItem(txKey)) || [];
+      localStorage.setItem(txKey, JSON.stringify([txData, ...prevTxs].slice(0, 10)));
+
+      // ✅ Balance Chart History Update
+      const balanceKey = `balanceHistory-${account}`;
+      const prevBalances = JSON.parse(localStorage.getItem(balanceKey)) || [];
+      const newBalancePoint = {
+        balance: rewardGLF.toFixed(3),
+        time: new Date().toLocaleString()
+      };
+      localStorage.setItem(balanceKey, JSON.stringify([newBalancePoint, ...prevBalances].slice(0, 12)));
 
       setNotification({ message: '✅ Reward claimed successfully!', type: 'success' });
-      setPendingReward(0); // Reset after claim
+      setPendingReward(0);
       if (onClaim) onClaim();
     } catch (err) {
       console.error('❌ Claim failed:', err);
@@ -69,26 +74,30 @@ const ClaimReward = ({ provider, account, setNotification, onClaim }) => {
 
   return (
     <div className="mt-10">
-      <div className="bg-gray-800 rounded-2xl p-6 shadow-xl text-center space-y-4">
-        <h2 className="text-xl font-semibold text-green-300">Claim Your GLF Rewards</h2>
+      <div className="bg-gray-800 rounded-2xl p-6 shadow-2xl text-center space-y-4 border border-green-700">
+        <h2 className="text-2xl font-semibold text-green-300 mb-2 animate-fade-in-down">
+          🌿 GLF Reward Claim Panel
+        </h2>
 
         {pendingReward !== null && (
-          <p className="text-sm text-gray-300 bg-gray-700 px-4 py-2 rounded-full inline-block shadow-sm">
-            You have <span className="font-bold text-green-400">{pendingReward.toFixed(3)} GLF</span> available to claim
-          </p>
+          <div className="animate-pulse">
+            <p className="inline-block bg-green-900 text-green-300 px-5 py-2 rounded-full text-sm shadow-sm">
+              You have <span className="font-bold text-green-400">{pendingReward.toFixed(3)} GLF</span> pending to claim
+            </p>
+          </div>
         )}
 
         <button
           onClick={claimReward}
           disabled={loading}
-          className={`mt-3 transition-all duration-300 px-8 py-3 rounded-full text-base font-semibold shadow-md 
+          className={`mt-3 transition-all duration-300 px-8 py-3 rounded-full text-base font-semibold shadow-md tracking-wide 
             ${
               loading
                 ? 'bg-gray-600 cursor-not-allowed'
                 : 'bg-gradient-to-r from-green-600 to-green-400 hover:from-green-500 hover:to-green-300 text-white'
             }`}
         >
-          {loading ? 'Claiming...' : '🌿 Claim Reward'}
+          {loading ? 'Claiming...' : '🎁 Claim Your GLF'}
         </button>
       </div>
     </div>

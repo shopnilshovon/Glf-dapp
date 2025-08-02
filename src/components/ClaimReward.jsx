@@ -15,7 +15,6 @@ const ClaimReward = ({ provider, account, setNotification, onClaim }) => {
 
     try {
       setLoading(true);
-
       const signer = await provider.getSigner();
       const contract = new Contract(tokenAddress, tokenABI, signer);
 
@@ -25,7 +24,7 @@ const ClaimReward = ({ provider, account, setNotification, onClaim }) => {
         return;
       }
 
-      const tx = await contract.claimReward(); // MetaMask popup expected here
+      const tx = await contract.claimReward();
       await tx.wait();
 
       const rewardGLF = parseFloat(earned.toString()) / 1e18;
@@ -40,10 +39,7 @@ const ClaimReward = ({ provider, account, setNotification, onClaim }) => {
       localStorage.setItem(key, JSON.stringify(updated));
 
       setNotification({ message: '✅ Reward claimed successfully!', type: 'success' });
-
-      if (onClaim) {
-        onClaim(); // 🔁 Refresh history trigger
-      }
+      if (onClaim) onClaim();
     } catch (err) {
       console.error('❌ Claim failed:', err);
       setNotification({ message: '❌ Failed to claim reward.', type: 'error' });
@@ -53,19 +49,22 @@ const ClaimReward = ({ provider, account, setNotification, onClaim }) => {
   };
 
   return (
-    <div className="mt-6 text-center">
-      <button
-        onClick={claimReward}
-        disabled={loading}
-        className={`transition-all duration-300 px-6 py-2 rounded-full text-sm font-semibold shadow-md 
-          ${
-            loading
-              ? 'bg-gray-600 cursor-not-allowed'
-              : 'bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white'
-          }`}
-      >
-        {loading ? 'Claiming...' : '🌿 Claim Reward'}
-      </button>
+    <div className="mt-8">
+      <div className="bg-gray-800 rounded-2xl p-6 shadow-xl text-center">
+        <h2 className="text-lg font-bold mb-4">🎁 Claim Your Pending Rewards</h2>
+        <button
+          onClick={claimReward}
+          disabled={loading}
+          className={`transition-all duration-300 px-8 py-3 rounded-full text-base font-semibold shadow-md 
+            ${
+              loading
+                ? 'bg-gray-600 cursor-not-allowed'
+                : 'bg-gradient-to-r from-green-600 to-green-400 hover:from-green-500 hover:to-green-300 text-white'
+            }`}
+        >
+          {loading ? 'Claiming...' : '🌿 Claim Reward'}
+        </button>
+      </div>
     </div>
   );
 };

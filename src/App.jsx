@@ -34,6 +34,22 @@ const App = () => {
       {/* Main Content */}
       <div className="relative z-10 max-w-2xl mx-auto space-y-6 p-4">
         <h1 className="text-3xl font-bold text-center">🌿 GreenLeaf DApp</h1>
+        <p className="text-center text-gray-400">Claim your GLF rewards easily & securely.</p>
+
+        {/* ✅ CTA button to connect wallet */}
+        {!account && (
+          <div className="flex justify-center">
+            <button
+              className="mt-4 px-6 py-3 bg-green-500 text-white font-medium rounded-full hover:bg-green-600 transition shadow-lg animate-bounce"
+              onClick={() => {
+                const connectBtn = document.getElementById("connect-btn");
+                if (connectBtn) connectBtn.click();
+              }}
+            >
+              🚀 Connect Wallet to Start
+            </button>
+          </div>
+        )}
 
         <Notifications message={notification.message} type={notification.type} />
 

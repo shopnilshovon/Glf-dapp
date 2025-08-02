@@ -4,7 +4,6 @@ import tokenABI from '../abis/tokenABI.json';
 import { toast } from 'react-toastify';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import BalanceChart from './BalanceChart';
 
 const contractAddress = '0xB4b628464F499118340A8Ddf805EF9E18B624310';
 
@@ -49,13 +48,6 @@ export default function ClaimReward({ account }) {
 
       toast.success('Reward claimed successfully!');
       setPendingReward('0.0');
-
-      const history = JSON.parse(localStorage.getItem('claimHistory') || '[]');
-      history.unshift({
-        amount: pendingReward,
-        time: new Date().toISOString(),
-      });
-      localStorage.setItem('claimHistory', JSON.stringify(history));
     } catch (error) {
       console.error(error);
       toast.error('Transaction failed or rejected.');
@@ -76,14 +68,9 @@ export default function ClaimReward({ account }) {
       </CardHeader>
 
       <CardContent>
-        <Button onClick={handleClaim} disabled={isClaiming} className="w-full mb-4">
+        <Button onClick={handleClaim} disabled={isClaiming} className="w-full">
           {isClaiming ? 'Claiming...' : 'Claim Rewards'}
         </Button>
-
-        <div className="mt-6">
-          <h3 className="text-md font-semibold text-muted-foreground mb-2">📈 Balance History</h3>
-          <BalanceChart account={account} />
-        </div>
       </CardContent>
     </Card>
   );

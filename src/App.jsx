@@ -8,79 +8,80 @@ import RewardRateInfo from './components/RewardRateInfo';
 import Roadmap from './components/Roadmap';
 import Tokenomics from './components/Tokenomics';
 import SocialLinks from './components/SocialLinks';
-import BalanceChart from './components/BalanceChart';
 
 const App = () => {
-  const [account, setAccount] = useState(localStorage.getItem("account") || null);
-  const [provider, setProvider] = useState(null);
-  const [notification, setNotification] = useState({ message: '', type: '' });
-  const [refreshCounter, setRefreshCounter] = useState(0);
+const [account, setAccount] = useState(localStorage.getItem("account") || null);
+const [provider, setProvider] = useState(null);
+const [notification, setNotification] = useState({ message: '', type: '' });
+const [refreshCounter, setRefreshCounter] = useState(0);
 
-  useEffect(() => {
-    if (notification.message) {
-      const timer = setTimeout(() => {
-        setNotification({ message: '', type: '' });
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [notification]);
+useEffect(() => {
+if (notification.message) {
+const timer = setTimeout(() => {
+setNotification({ message: '', type: '' });
+}, 3000);
+return () => clearTimeout(timer);
+}
+}, [notification]);
 
-  return (
-    <div className="relative min-h-screen bg-gray-900 text-white overflow-hidden">
-      {/* ✅ Jelly background blobs */}
-      <div className="absolute top-[-100px] left-[-100px] w-[300px] h-[300px] bg-green-400 opacity-30 rounded-full filter blur-3xl animate-pulse blob1" />
-      <div className="absolute top-[200px] right-[-100px] w-[300px] h-[300px] bg-green-600 opacity-20 rounded-full filter blur-2xl animate-ping blob2" />
-      <div className="absolute bottom-[-150px] left-[50%] transform -translate-x-1/2 w-[400px] h-[400px] bg-emerald-500 opacity-10 rounded-full filter blur-2xl animate-bounce blob3" />
+return (
+<div className="relative min-h-screen bg-gray-900 text-white overflow-hidden">
+{/* ✅ Jelly background blobs */}
+<div className="absolute top-[-100px] left-[-100px] w-[300px] h-[300px] bg-green-400 opacity-30 rounded-full filter blur-3xl animate-pulse blob1" />
+<div className="absolute top-[200px] right-[-100px] w-[300px] h-[300px] bg-green-600 opacity-20 rounded-full filter blur-2xl animate-ping blob2" />
+<div className="absolute bottom-[-150px] left-[50%] transform -translate-x-1/2 w-[400px] h-[400px] bg-emerald-500 opacity-10 rounded-full filter blur-2xl animate-bounce blob3" />
 
-      {/* Main Content */}
-      <div className="relative z-10 max-w-2xl mx-auto space-y-6 p-4">
-        <h1 className="text-3xl font-bold text-center">🌿 GreenLeaf DApp</h1>
-        <p className="text-center text-gray-400">Claim your GLF rewards easily & securely.</p>
+{/* Main Content */}  
+  <div className="relative z-10 max-w-2xl mx-auto space-y-6 p-4">  
+    <h1 className="text-3xl font-bold text-center">🌿 GreenLeaf DApp</h1>  
+    <p className="text-center text-gray-400">Claim your GLF rewards easily & securely.</p>  
 
-        {!account && (
-          <div className="flex justify-center">
-            <button
-              className="mt-4 px-6 py-3 bg-green-500 text-white font-medium rounded-full hover:bg-green-600 transition shadow-lg animate-bounce"
-              onClick={() => {
-                const connectBtn = document.getElementById("connect-btn");
-                if (connectBtn) connectBtn.click();
-              }}
-            >
-              🚀 Connect Wallet to Start
-            </button>
-          </div>
-        )}
+    {/* ✅ CTA button to connect wallet */}  
+    {!account && (  
+      <div className="flex justify-center">  
+        <button  
+          className="mt-4 px-6 py-3 bg-green-500 text-white font-medium rounded-full hover:bg-green-600 transition shadow-lg animate-bounce"  
+          onClick={() => {  
+            const connectBtn = document.getElementById("connect-btn");  
+            if (connectBtn) connectBtn.click();  
+          }}  
+        >  
+          🚀 Connect Wallet to Start  
+        </button>  
+      </div>  
+    )}  
 
-        <Notifications message={notification.message} type={notification.type} />
+    <Notifications message={notification.message} type={notification.type} />  
 
-        <WalletConnect
-          account={account}
-          setAccount={setAccount}
-          setProvider={setProvider}
-          setNotification={setNotification}
-        />
+    <WalletConnect  
+      account={account}  
+      setAccount={setAccount}  
+      setProvider={setProvider}  
+      setNotification={setNotification}  
+    />  
 
-        {account && provider && (
-          <>
-            <GLFInfo account={account} provider={provider} refresh={refreshCounter} />
-            <RewardRateInfo provider={provider} />
-            <ClaimReward
-              account={account}
-              provider={provider}
-              setNotification={setNotification}
-              onClaim={() => setRefreshCounter((prev) => prev + 1)}
-            />
-            <BalanceChart account={account} />
-            <TransactionHistory account={account} refresh={refreshCounter} />
-          </>
-        )}
+    {account && provider && (  
+      <>  
+        <GLFInfo account={account} provider={provider} refresh={refreshCounter} />  
+        <RewardRateInfo provider={provider} />  
+        <ClaimReward  
+          account={account}  
+          provider={provider}  
+          setNotification={setNotification}  
+          onClaim={() => setRefreshCounter((prev) => prev + 1)}  
+        />  
+        <TransactionHistory account={account} refresh={refreshCounter} />  
+      </>  
+    )}  
 
-        <Tokenomics />
-        <Roadmap />
-        <SocialLinks />
-      </div>
-    </div>
-  );
+    <Tokenomics />  
+    <Roadmap />  
+    <SocialLinks />  
+  </div>  
+</div>
+
+);
 };
 
 export default App;
+

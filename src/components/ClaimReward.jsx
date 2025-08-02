@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import tokenABI from '../abis/tokenABI.json';
 import { toast } from 'react-toastify';
-import { Button } from '../components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const contractAddress = '0xB4b628464F499118340A8Ddf805EF9E18B624310';
 
@@ -19,8 +19,8 @@ export default function ClaimReward({ account }) {
         const provider = new ethers.BrowserProvider(window.ethereum);
         const contract = new ethers.Contract(contractAddress, tokenABI, provider);
         const reward = await contract.getPendingReward(account);
-        const formatted = parseFloat(ethers.formatUnits(reward, 18)).toFixed(4);
-        setPendingReward(formatted);
+        const formatted = ethers.formatUnits(reward.toString(), 18);
+        setPendingReward(parseFloat(formatted).toFixed(4));
       } catch (error) {
         console.error('Error fetching reward:', error);
         setPendingReward('0.0');
@@ -60,7 +60,9 @@ export default function ClaimReward({ account }) {
     <Card className="bg-muted/30 p-4 rounded-2xl mt-4 shadow-md">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-xl font-bold text-green-500">🎁 GLF Reward Summary</CardTitle>
+          <CardTitle className="text-xl font-bold">
+            <span className="text-green-500">🎁 GLF Reward Summary</span>
+          </CardTitle>
         </div>
         <CardDescription className="text-sm text-muted-foreground mt-1">
           You have <span className="font-medium text-green-500">{pendingReward}</span> GLF pending to claim.

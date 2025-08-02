@@ -1,3 +1,27 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ✅ Blob animation keyframes and utility classes */
+@layer utilities {
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  .blob1 {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .blob2 {
+    animation: float 8s ease-in-out infinite;
+  }
+
+  .blob3 {
+    animation: float 10s ease-in-out infinite;
+  }
+}

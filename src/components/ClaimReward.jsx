@@ -3,8 +3,14 @@ import { ethers } from 'ethers';
 import tokenABI from '../abis/tokenABI.json';
 import { toast } from 'react-toastify';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import BalanceChart from './BalanceChart'; // <-- Import the chart
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import BalanceChart from './BalanceChart';
 
 const contractAddress = '0xB4b628464F499118340A8Ddf805EF9E18B624310';
 
@@ -46,7 +52,7 @@ export default function ClaimReward({ account }) {
       toast.info('Transaction sent. Waiting for confirmation...');
       await tx.wait();
 
-      toast.success(`Reward claimed successfully!`);
+      toast.success('Reward claimed successfully!');
       setPendingReward('0.0');
 
       const history = JSON.parse(localStorage.getItem('claimHistory') || '[]');
@@ -67,12 +73,14 @@ export default function ClaimReward({ account }) {
     <Card className="bg-muted/30 p-4 rounded-2xl mt-4 shadow-md">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-xl font-bold">
-            <span className="text-green-500">🎁 GLF Reward Summary</span>
+          <CardTitle className="text-xl font-bold text-green-500">
+            🎁 GLF Reward Summary
           </CardTitle>
         </div>
         <CardDescription className="text-sm text-muted-foreground mt-1">
-          You have <span className="font-medium text-green-500">{pendingReward}</span> GLF pending to claim.
+          You have{' '}
+          <span className="font-medium text-green-500">{pendingReward}</span> GLF
+          pending to claim.
         </CardDescription>
       </CardHeader>
 
@@ -82,7 +90,9 @@ export default function ClaimReward({ account }) {
         </Button>
 
         <div className="mt-6">
-          <h3 className="text-md font-semibold text-muted-foreground mb-2">📈 Balance History</h3>
+          <h3 className="text-md font-semibold text-muted-foreground mb-2">
+            📈 Balance History
+          </h3>
           <BalanceChart account={account} />
         </div>
       </CardContent>

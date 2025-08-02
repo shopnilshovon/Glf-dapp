@@ -8,6 +8,7 @@ import RewardRateInfo from './components/RewardRateInfo';
 import Roadmap from './components/Roadmap';
 import Tokenomics from './components/Tokenomics';
 import SocialLinks from './components/SocialLinks';
+import BalanceChart from './components/BalanceChart';
 
 const App = () => {
   const [account, setAccount] = useState(localStorage.getItem("account") || null);
@@ -36,7 +37,6 @@ const App = () => {
         <h1 className="text-3xl font-bold text-center">🌿 GreenLeaf DApp</h1>
         <p className="text-center text-gray-400">Claim your GLF rewards easily & securely.</p>
 
-        {/* ✅ CTA button to connect wallet */}
         {!account && (
           <div className="flex justify-center">
             <button
@@ -70,6 +70,7 @@ const App = () => {
               setNotification={setNotification}
               onClaim={() => setRefreshCounter((prev) => prev + 1)}
             />
+            <BalanceChart account={account} />
             <TransactionHistory account={account} refresh={refreshCounter} />
           </>
         )}

@@ -24,11 +24,11 @@ const Tokenomics = () => {
         className="text-3xl font-extrabold text-green-400 flex items-center justify-center mb-6 select-none"
       >
         <span role="img" aria-label="leaf" className="mr-2 text-4xl">
-          🌿
+          
         </span>
-        GreenLeaf ($GLF) Tokenomics
+        GreenLeaf Tokenomics
         <span role="img" aria-label="leaf" className="ml-2 text-4xl">
-          🌿
+          
         </span>
       </h2>
 

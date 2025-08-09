@@ -35,7 +35,7 @@ export default function Tokenomics() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div>
             <h3 className="text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-lime-300">
-              🌿 $GLF Tokenomics
+              🌿    $GLF Tokenomics
             </h3>
             <p className="text-sm text-gray-300 mt-1 max-w-xl">
               Concise breakdown of total supply and distribution. Built on Polygon for

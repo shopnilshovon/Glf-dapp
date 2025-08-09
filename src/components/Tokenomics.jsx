@@ -20,15 +20,15 @@ const Tokenomics = () => {
         </div>
         <div className="bg-white/10 p-3 rounded-lg flex justify-between items-center">
           <span className="text-gray-200">🔹 Airdrop</span>
-          <span className="font-semibold text-white">50%</span>
+          <span className="font-semibold text-white">40%</span>
         </div>
         <div className="bg-white/10 p-3 rounded-lg flex justify-between items-center">
           <span className="text-gray-200">🔹 Other Event</span>
-          <span className="font-semibold text-white">5%</span>
+          <span className="font-semibold text-white">10%</span>
         </div>
         <div className="bg-white/10 p-3 rounded-lg flex justify-between items-center">
           <span className="text-gray-200">🔹 Marketing</span>
-          <span className="font-semibold text-white">5%</span>
+          <span className="font-semibold text-white">10%</span>
         </div>
         <div className="bg-white/10 p-3 rounded-lg flex justify-between items-center">
           <span className="text-gray-200">🔹 Team</span>

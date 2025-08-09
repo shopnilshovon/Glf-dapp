@@ -15,14 +15,14 @@ export default function Roadmap() {
             🌱 Phase 1: Project Initialization (Current Stage)
           </h3>
           <ul className="list-disc list-inside space-y-1 text-gray-300">
-            <li>✅ Deploy GreenLeaf Token (GLF) with 5,000,000 fixed supply</li>
+            <li>✅ Deploy GreenLeaf Token (GLF) with 7,000,000 Circulating supply</li>
             <li>✅ Develop GreenLeaf DApp with daily passive reward system</li>
             <li>✅ Set 4% daily reward based on wallet-hold GLF tokens</li>
             <li>✅ Launch Public Presale Round 1</li>
             <li>✅ Total Presale Token Pool: 500,000 GLF (3 rounds)</li>
-            <li>✅ Set reward cap at 6,500,000 total GLF supply</li>
+            <li>✅ Set reward cap at 10,000,000 total GLF supply</li>
             <li className="italic text-sm mt-1">
-              Reward & interest will stop permanently after reaching 6.5M
+              Reward & interest will stop permanently after reaching 10M
             </li>
           </ul>
         </div>
@@ -86,7 +86,7 @@ export default function Roadmap() {
             <li>Total Airdrop Pool: 2,000,000 GLF</li>
             <li>Distribution based on community participation & task completion</li>
             <li>💥 DEX Trade Volume Event</li>
-            <li>Bonus reward pool: 250,000 GLF</li>
+            <li>Bonus reward pool: 200,000 GLF</li>
             <li>For high-volume DEX traders & active users</li>
           </ul>
         </div>
@@ -119,7 +119,7 @@ export default function Roadmap() {
             🔚 End of Reward Phase
           </h3>
           <p className="text-gray-300">
-            When total GLF supply reaches 6,500,000, the daily mining & reward system will be permanently disabled
+            When total GLF supply reaches 10,000,000, the daily holding & reward system will be permanently disabled
             <br />
             Focus shifts to long-term growth, exchange listings, and utility creation
           </p>

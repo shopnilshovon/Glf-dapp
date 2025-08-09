@@ -117,7 +117,7 @@ export default function Tokenomics() {
 
           <p>
             <strong>Distribution notes:</strong> Presale rounds are limited pools — users must purchase
-            in presale and hold tokens in-wallet to be eligible for mining rewards.
+            in presale and hold tokens in-wallet to be eligible for holding rewards.
           </p>
 
           <p className="text-xs text-gray-400">

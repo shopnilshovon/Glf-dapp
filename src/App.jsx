@@ -71,9 +71,7 @@ return (
         />  
         <TransactionHistory account={account} refresh={refreshCounter} />  
       </>  
-    )}  
-
-    <Tokenomics />  
+    )}    
     <Roadmap />  
     <SocialLinks />  
   </div>  

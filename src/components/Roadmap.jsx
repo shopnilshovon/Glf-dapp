@@ -22,7 +22,7 @@ export default function Roadmap() {
             <li>✅ Total Presale Token Pool: 500,000 GLF (3 rounds)</li>
             <li>✅ Set reward cap at 6,500,000 total GLF supply</li>
             <li className="italic text-sm mt-1">
-              Reward & interest will stop permanently after reaching 2M
+              Reward & interest will stop permanently after reaching 6.5M
             </li>
           </ul>
         </div>

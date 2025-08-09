@@ -16,12 +16,12 @@ const Tokenomics = () => {
 
   return (
     <section
-      className="max-w-3xl mx-auto bg-white rounded-xl shadow-md p-8 mt-8"
+      className="max-w-3xl mx-auto bg-gray-900 rounded-xl shadow-lg p-8 mt-8 text-gray-300"
       aria-labelledby="tokenomics-title"
     >
       <h2
         id="tokenomics-title"
-        className="text-3xl font-extrabold text-green-700 flex items-center justify-center mb-6"
+        className="text-3xl font-extrabold text-green-400 flex items-center justify-center mb-6 select-none"
       >
         <span role="img" aria-label="leaf" className="mr-2 text-4xl">
           🌿
@@ -32,22 +32,23 @@ const Tokenomics = () => {
         </span>
       </h2>
 
-      <p className="text-center text-lg font-semibold text-green-800 mb-6">
-        💰 Total Supply: <span className="text-green-600">10,000,000 GLF (100%)</span>
+      <p className="text-center text-lg font-semibold text-green-300 mb-6 select-text">
+        💰 Total Supply:{" "}
+        <span className="text-green-500 font-bold">10,000,000 GLF (100%)</span>
       </p>
 
       <div className="mb-8">
-        <h3 className="text-xl font-semibold border-b-2 border-green-400 inline-block mb-4 text-green-700">
+        <h3 className="text-xl font-semibold border-b-2 border-green-500 inline-block mb-4 text-green-400 select-none">
           📊 Distribution
         </h3>
         <ul className="space-y-3">
           {distribution.map(({ label, amount, percent }) => (
             <li
               key={label}
-              className="flex justify-between px-4 py-2 rounded-md hover:bg-green-50 cursor-default transition-colors"
+              className="flex justify-between px-4 py-2 rounded-md hover:bg-green-900 cursor-default transition-colors select-text"
             >
-              <span className="font-medium text-green-900">{label}</span>
-              <span className="font-semibold text-green-700">
+              <span className="font-medium text-green-300">{label}</span>
+              <span className="font-semibold text-green-500">
                 {amount} ({percent})
               </span>
             </li>
@@ -55,14 +56,17 @@ const Tokenomics = () => {
         </ul>
       </div>
 
-      <div className="bg-green-50 border-l-4 border-green-400 rounded-md p-4 text-green-700 max-w-md mx-auto">
-        <h3 className="text-lg font-semibold mb-2">⚡ Mining Rewards</h3>
+      <div className="bg-green-900 border-l-4 border-green-500 rounded-md p-5 text-green-400 max-w-md mx-auto select-text">
+        <h3 className="text-lg font-semibold mb-2 select-none">⚡ Mining Rewards</h3>
         <p className="mb-1">• Daily reward: <strong>4%</strong></p>
         <p className="mb-1">• Total mining cap: <strong>3,000,000 GLF</strong></p>
-        <p className="mb-0">• Once mining cap is reached, mining will be <strong>permanently closed.</strong></p>
+        <p className="mb-0">
+          • Once mining cap is reached, mining will be{" "}
+          <strong>permanently closed.</strong>
+        </p>
       </div>
 
-      <p className="mt-10 text-center italic text-green-700 font-semibold">
+      <p className="mt-10 text-center italic text-green-400 font-semibold select-text">
         🌐 Built on <strong>Polygon</strong> — Low fees, fast transactions, and eco-friendly blockchain technology.
       </p>
     </section>

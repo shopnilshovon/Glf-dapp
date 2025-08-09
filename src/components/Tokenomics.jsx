@@ -4,13 +4,13 @@ const DISTRIBUTION = [
   { label: "Presale", amount: 500_000, color: "bg-green-400" },
   { label: "Airdrop Pool", amount: 2_000_000, color: "bg-lime-400" },
   { label: "DEX Liquidity", amount: 1_000_000, color: "bg-emerald-400" },
-  { label: "Holding / Mining Rewards", amount: 3_000_000, color: "bg-yellow-400" },
+  { label: "Holding Rewards", amount: 3_000_000, color: "bg-yellow-400" },
   { label: "Marketing", amount: 500_000, color: "bg-indigo-400" },
-  { label: "Exchanger Reserve", amount: 1_000_000, color: "bg-cyan-400" },
-  { label: "Future Community Rewards", amount: 500_000, color: "bg-fuchsia-400" },
+  { label: "CEX Liquidity", amount: 1_000_000, color: "bg-cyan-400" },
+  { label: "Community Rewards", amount: 500_000, color: "bg-fuchsia-400" },
   { label: "Staking Rewards", amount: 800_000, color: "bg-rose-400" },
-  { label: "DEX Trade Volume Rewards", amount: 200_000, color: "bg-slate-400" },
-  { label: "Project Loyalty Holders", amount: 500_000, color: "bg-teal-400" },
+  { label: "Trade Volume Rewards", amount: 200_000, color: "bg-slate-400" },
+  { label: "Loyalty Holders", amount: 500_000, color: "bg-teal-400" },
 ];
 
 const TOTAL_SUPPLY = 10_000_000;
@@ -35,7 +35,7 @@ export default function Tokenomics() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div>
             <h3 className="text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-lime-300">
-              🌿 GreenLeaf ($GLF) — Tokenomics
+              🌿 $GLF Tokenomics
             </h3>
             <p className="text-sm text-gray-300 mt-1 max-w-xl">
               Concise breakdown of total supply and distribution. Built on Polygon for
@@ -59,19 +59,19 @@ export default function Tokenomics() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
           <div className="p-4 rounded-lg bg-white/3 border border-white/6">
             <p className="text-xs text-gray-300">Presale Rounds</p>
-            <p className="font-bold text-lg text-white">3 Rounds — 100k each</p>
-            <p className="text-xs text-gray-400 mt-1">Total presale pool: 300k</p>
+            <p className="font-bold text-lg text-white">3 Rounds </p>
+            <p className="text-xs text-gray-400 mt-1">Total presale pool: 500k</p>
           </div>
 
           <div className="p-4 rounded-lg bg-white/3 border border-white/6">
-            <p className="text-xs text-gray-300">Mining Rewards</p>
+            <p className="text-xs text-gray-300">Holding Rewards</p>
             <p className="font-bold text-lg text-yellow-300">Daily Reward: 4%</p>
             <p className="text-xs text-gray-400 mt-1">Cap: 3,000,000 — after cap, mining stops</p>
           </div>
 
           <div className="p-4 rounded-lg bg-white/3 border border-white/6">
             <p className="text-xs text-gray-300">DEX Listing</p>
-            <p className="font-bold text-lg text-emerald-300">Listing Liquidity: 300k</p>
+            <p className="font-bold text-lg text-emerald-300">Listing Liquidity: 1M</p>
             <p className="text-xs text-gray-400 mt-1">Target listing price: $0.30</p>
           </div>
         </div>

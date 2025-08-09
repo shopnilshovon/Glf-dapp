@@ -6,21 +6,21 @@ const Tokenomics = () => {
       <h2 className="text-2xl font-bold text-center text-white">📊 Tokenomics</h2>
 
       <p className="text-center text-gray-200">
-        Total Supply: <span className="font-semibold text-white">1,000,000 GLF</span>
+        Total Supply: <span className="font-semibold text-white">5,000,000 GLF</span>
       </p>
 
       <div className="space-y-2 text-sm sm:text-base">
         <div className="bg-white/10 p-3 rounded-lg flex justify-between items-center">
           <span className="text-gray-200">🔹 Presale</span>
-          <span className="font-semibold text-white">30%</span>
+          <span className="font-semibold text-white">10%</span>
         </div>
         <div className="bg-white/10 p-3 rounded-lg flex justify-between items-center">
           <span className="text-gray-200">🔹 Dex</span>
-          <span className="font-semibold text-white">30%</span>
+          <span className="font-semibold text-white">20%</span>
         </div>
         <div className="bg-white/10 p-3 rounded-lg flex justify-between items-center">
           <span className="text-gray-200">🔹 Airdrop</span>
-          <span className="font-semibold text-white">20%</span>
+          <span className="font-semibold text-white">50%</span>
         </div>
         <div className="bg-white/10 p-3 rounded-lg flex justify-between items-center">
           <span className="text-gray-200">🔹 Other Event</span>

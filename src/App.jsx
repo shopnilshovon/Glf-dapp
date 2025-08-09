@@ -5,6 +5,7 @@ import ClaimReward from './components/ClaimReward';
 import TransactionHistory from './components/TransactionHistory';
 import Notifications from './components/Notifications';
 import RewardRateInfo from './components/RewardRateInfo';
+import Roadmap from './components/Roadmap';
 import Tokenomics from './components/Tokenomics';
 import SocialLinks from './components/SocialLinks';
 
@@ -71,7 +72,9 @@ return (
         />  
         <TransactionHistory account={account} refresh={refreshCounter} />  
       </>  
-    )}    
+    )}  
+
+    <Tokenomics />  
     <Roadmap />  
     <SocialLinks />  
   </div>  
@@ -81,4 +84,3 @@ return (
 };
 
 export default App;
-

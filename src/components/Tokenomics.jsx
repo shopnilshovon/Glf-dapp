@@ -2,21 +2,21 @@ import React from "react";
 
 const Tokenomics = () => {
   const distribution = [
-    { label: "Presale", amount: "500,000", percent: "5%" },
-    { label: "Airdrop", amount: "2,000,000", percent: "20%" },
-    { label: "DEX Liquidity", amount: "1,000,000", percent: "10%" },
-    { label: "Mining Rewards", amount: "3,000,000", percent: "30%" },
-    { label: "Marketing", amount: "500,000", percent: "5%" },
-    { label: "Exchanger Reserve", amount: "1,000,000", percent: "10%" },
-    { label: "Future Community Rewards", amount: "500,000", percent: "5%" },
-    { label: "Staking Rewards", amount: "800,000", percent: "8%" },
-    { label: "DEX Trade Volume Reserve", amount: "200,000", percent: "2%" },
-    { label: "Liquidity + Holder Bonus", amount: "500,000", percent: "5%" },
+    { label: "Presale", amount: 500000, percent: 5 },
+    { label: "Airdrop", amount: 2000000, percent: 20 },
+    { label: "DEX Liquidity", amount: 1000000, percent: 10 },
+    { label: "Mining Rewards", amount: 3000000, percent: 30 },
+    { label: "Marketing", amount: 500000, percent: 5 },
+    { label: "Exchanger Reserve", amount: 1000000, percent: 10 },
+    { label: "Future Community Rewards", amount: 500000, percent: 5 },
+    { label: "Staking Rewards", amount: 800000, percent: 8 },
+    { label: "DEX Trade Volume Reserve", amount: 200000, percent: 2 },
+    { label: "Liquidity + Holder Bonus", amount: 500000, percent: 5 },
   ];
 
   return (
     <section
-      className="max-w-3xl mx-auto bg-gray-900 rounded-xl shadow-lg p-8 mt-8 text-gray-300"
+      className="max-w-3xl mx-auto bg-gray-900 rounded-xl shadow-lg p-6 mt-8 text-gray-300"
       aria-labelledby="tokenomics-title"
     >
       <h2
@@ -38,22 +38,35 @@ const Tokenomics = () => {
       </p>
 
       <div className="mb-8">
-        <h3 className="text-xl font-semibold border-b-2 border-green-500 inline-block mb-4 text-green-400 select-none">
+        <h3 className="text-xl font-semibold border-b-2 border-green-500 inline-block mb-6 text-green-400 select-none">
           📊 Distribution
         </h3>
-        <ul className="space-y-3">
+
+        <div className="space-y-5">
           {distribution.map(({ label, amount, percent }) => (
-            <li
+            <div
               key={label}
-              className="flex justify-between px-4 py-2 rounded-md hover:bg-green-900 cursor-default transition-colors select-text"
+              className="bg-green-950 rounded-lg p-4"
+              aria-label={`${label} allocation ${percent} percent`}
+              role="group"
+              tabIndex={0}
             >
-              <span className="font-medium text-green-300">{label}</span>
-              <span className="font-semibold text-green-500">
-                {amount} ({percent})
-              </span>
-            </li>
+              <div className="flex justify-between mb-2 select-text">
+                <span className="font-semibold text-green-300">{label}</span>
+                <span className="font-bold text-green-500">
+                  {amount.toLocaleString()} ({percent}%)
+                </span>
+              </div>
+              {/* Bar */}
+              <div className="w-full bg-green-800 rounded-full h-5 overflow-hidden">
+                <div
+                  className="bg-green-400 h-5 rounded-full transition-width duration-700"
+                  style={{ width: `${percent}%` }}
+                ></div>
+              </div>
+            </div>
           ))}
-        </ul>
+        </div>
       </div>
 
       <div className="bg-green-900 border-l-4 border-green-500 rounded-md p-5 text-green-400 max-w-md mx-auto select-text">

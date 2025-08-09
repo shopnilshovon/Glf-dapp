@@ -59,19 +59,19 @@ export default function Tokenomics() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
           <div className="p-4 rounded-lg bg-white/3 border border-white/6">
             <p className="text-xs text-gray-300">Presale Rounds</p>
-            <p className="font-bold text-lg text-white">3 Rounds </p>
+            <p className="font-bold text-lg text-white">3 Rounds Pool </p>
             <p className="text-xs text-gray-400 mt-1">Total presale pool: 500k</p>
           </div>
 
           <div className="p-4 rounded-lg bg-white/3 border border-white/6">
             <p className="text-xs text-gray-300">Holding Rewards</p>
             <p className="font-bold text-lg text-yellow-300">Daily Reward: 4%</p>
-            <p className="text-xs text-gray-400 mt-1">Cap: 3,000,000 — after cap, mining stops</p>
+            <p className="text-xs text-gray-400 mt-1">Cap: 3,000,000 — after cap, holding rewards stops</p>
           </div>
 
           <div className="p-4 rounded-lg bg-white/3 border border-white/6">
             <p className="text-xs text-gray-300">DEX Listing</p>
-            <p className="font-bold text-lg text-emerald-300">Listing Liquidity: 1M</p>
+            <p className="font-bold text-lg text-emerald-300">Listing Liquidity: 1,000,000 $GLF</p>
             <p className="text-xs text-gray-400 mt-1">Target listing price: $0.30</p>
           </div>
         </div>

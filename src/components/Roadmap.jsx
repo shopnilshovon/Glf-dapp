@@ -70,7 +70,7 @@ export default function Roadmap() {
           <ul className="list-disc list-inside space-y-1 text-gray-300">
             <li>✅ Launch on DEX (Uniswap / Quickswap)</li>
             <li>✅ Initial DEX Token Price: $0.30 USDT</li>
-            <li>✅ Provide 500,000 GLF as liquidity to DEX</li>
+            <li>✅ Provide 1,000,000 GLF as liquidity to DEX</li>
           </ul>
         </div>
 

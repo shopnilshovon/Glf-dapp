@@ -1,14 +1,14 @@
 import { motion } from "framer-motion";
 
 const DISTRIBUTION = [
-  { label: "Presale", amount: 500_000, color: "bg-green-400" },
+  { label: "Presale Pool", amount: 500_000, color: "bg-green-400" },
   { label: "Airdrop Pool", amount: 2_000_000, color: "bg-lime-400" },
   { label: "DEX Liquidity", amount: 1_000_000, color: "bg-emerald-400" },
   { label: "Holding Rewards", amount: 3_000_000, color: "bg-yellow-400" },
   { label: "Marketing", amount: 500_000, color: "bg-indigo-400" },
   { label: "CEX Liquidity", amount: 800_000, color: "bg-cyan-400" },
   { label: "Community Rewards", amount: 500_000, color: "bg-fuchsia-400" },
-  { label: "Staking Rewards", amount: 1_500_000, color: "bg-rose-400" },
+  { label: "Staking Pool", amount: 1_500_000, color: "bg-rose-400" },
   { label: "Loyalty Holders", amount: 200_000, color: "bg-teal-400" },
 ];
 

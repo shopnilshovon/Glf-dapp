@@ -8,8 +8,7 @@ const DISTRIBUTION = [
   { label: "Marketing", amount: 500_000, color: "bg-indigo-400" },
   { label: "CEX Liquidity", amount: 1_000_000, color: "bg-cyan-400" },
   { label: "Community Rewards", amount: 500_000, color: "bg-fuchsia-400" },
-  { label: "Staking Rewards", amount: 800_000, color: "bg-rose-400" },
-  { label: "Trade Volume Rewards", amount: 200_000, color: "bg-slate-400" },
+  { label: "Staking Rewards", amount: 1_000_000, color: "bg-rose-400" },
   { label: "Loyalty Holders", amount: 500_000, color: "bg-teal-400" },
 ];
 
@@ -65,7 +64,7 @@ export default function Tokenomics() {
 
           <div className="p-4 rounded-lg bg-white/3 border border-white/6">
             <p className="text-xs text-gray-300">Holding Rewards</p>
-            <p className="font-bold text-lg text-yellow-300">Daily Reward: 4%</p>
+            <p className="font-bold text-lg text-yellow-300">Daily Reward: 2%</p>
             <p className="text-xs text-gray-400 mt-1">Cap: 3,000,000 — after cap, holding rewards stops</p>
           </div>
 

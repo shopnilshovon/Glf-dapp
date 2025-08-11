@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import tokenABI from '../abis/tokenABI.json';
 
-const tokenAddress = '0xB4b628464F499118340A8Ddf805EF9E18B624310';
+const tokenAddress = '0x8289DF06a6A6846d74BE7a9ce958d5F8ddce2511';
 
 const RewardRateInfo = ({ provider }) => {
   const [rate, setRate] = useState(null);
